@@ -4,19 +4,16 @@
   <meta charset="UTF-8">
   <title>Campus | Rengøring – Sager</title>
 
-  <!-- Vue + Axios -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <style>
-    /* ===== BASE ===== */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f4f4;
     }
 
-    /* ===== HEADER ===== */
     header {
       background: #000;
       color: #ffd400;
@@ -42,15 +39,10 @@
       text-decoration: underline;
     }
 
-    /* ===== LAYOUT ===== */
     main {
       padding: 30px;
       max-width: 1100px;
       margin: auto;
-    }
-
-    h1 {
-      margin-bottom: 25px;
     }
 
     .card {
@@ -61,28 +53,6 @@
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
 
-    .meta {
-      opacity: 0.85;
-      font-size: 0.95em;
-    }
-
-    select {
-      width: 100%;
-      padding: 6px;
-      margin-top: 4px;
-    }
-
-    button {
-      background: #000;
-      color: #ffd400;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    /* ===== IMAGE ===== */
     .thumb {
       max-width: 200px;
       border-radius: 10px;
@@ -106,7 +76,6 @@
       border-radius: 12px;
     }
 
-    /* ===== FOOTER ===== */
     footer {
       background: #000;
       color: #ffd400;
@@ -137,7 +106,19 @@
   <div id="app">
     <p v-if="error" style="color:red">{{ error }}</p>
 
-    <div v-for="i in issues" :key="i.idissue" class="card">
+    <!-- ✅ STATUS FILTER -->
+    <div style="margin-bottom:20px">
+      <label><strong>Filtrer efter status</strong></label>
+      <select v-model="filterStatus">
+        <option value="alle">Alle</option>
+        <option>Ny</option>
+        <option>I gang</option>
+        <option>Lukket</option>
+      </select>
+    </div>
+
+    <!-- ❗ BRUGER filteredIssues -->
+    <div v-for="i in filteredIssues" :key="i.idissue" class="card">
       <h3>{{ i.title }}</h3>
       <p>{{ i.description }}</p>
 
@@ -150,26 +131,22 @@
         </select>
       </p>
 
-      <p class="meta">
-        <strong>Severity:</strong> {{ i.severity }}
-      </p>
+      <p><strong>Severity:</strong> {{ i.severity }}</p>
 
       <div v-if="i.imageUrl">
-        <p class="meta">Klik på billedet for at åbne</p>
+        <p>Klik på billedet for at åbne</p>
         <img
           :src="i.imageUrl"
           class="thumb"
           @click="openImage(i.imageUrl)"
-          alt="Issue billede"
         >
       </div>
 
       <button @click="save(i)">💾 Gem ændringer</button>
     </div>
 
-    <!-- Popup -->
     <div v-if="selectedImage" class="image-modal" @click="selectedImage = null">
-      <img :src="selectedImage" @click.stop alt="Stort billede">
+      <img :src="selectedImage" @click.stop>
     </div>
   </div>
 </main>

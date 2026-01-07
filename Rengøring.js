@@ -4,6 +4,7 @@ Vue.createApp({
   data() {
     return {
       issues: [],
+      filterStatus: "alle",   // ✅ NY
       error: null,
       selectedImage: null
     };
@@ -11,6 +12,18 @@ Vue.createApp({
 
   async mounted() {
     await this.load();
+  },
+
+  computed: {
+    // ✅ STATUS FILTRERING
+    filteredIssues() {
+      if (this.filterStatus === "alle") {
+        return this.issues;
+      }
+      return this.issues.filter(
+        i => i.status === this.filterStatus
+      );
+    }
   },
 
   methods: {
@@ -25,10 +38,7 @@ Vue.createApp({
         this.issues = allIssues.filter(
           i => Number(i.categoryId) === 3
         );
-
-        console.log("RENGØRING ISSUES:", this.issues);
       } catch (e) {
-        console.error(e);
         this.error = e.message;
       }
     },
