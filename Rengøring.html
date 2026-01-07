@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Campus | Rengøring – Sager</title>
+
+  <!-- Vue + Axios -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <style>
+    /* ===== BASE ===== */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: #000;
+      color: #ffd400;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+
+    header nav a {
+      color: #ffd400;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    header nav a.active {
+      text-decoration: underline;
+    }
+
+    /* ===== LAYOUT ===== */
+    main {
+      padding: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .meta {
+      opacity: 0.85;
+      font-size: 0.95em;
+    }
+
+    select {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+    }
+
+    button {
+      background: #000;
+      color: #ffd400;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* ===== IMAGE ===== */
+    .thumb {
+      max-width: 200px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .image-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .image-modal img {
+      max-width: 95vw;
+      max-height: 95vh;
+      border-radius: 12px;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #000;
+      color: #ffd400;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Campus</div>
+  <nav>
+    <a href="index.html">Rooms</a>
+    <a href="it.html">IT</a>
+    <a href="issues-udstyr.html">Udstyr</a>
+    <a href="rengoering.html" class="active">Rengøring</a>
+    <a href="administrativ.html">Administrativ</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Rengøring – Sager</h1>
+
+  <div id="app">
+    <p v-if="error" style="color:red">{{ error }}</p>
+
+    <div v-for="i in issues" :key="i.idissue" class="card">
+      <h3>{{ i.title }}</h3>
+      <p>{{ i.description }}</p>
+
+      <p>
+        <strong>Status</strong>
+        <select v-model="i.status">
+          <option>Ny</option>
+          <option>I gang</option>
+          <option>Lukket</option>
+        </select>
+      </p>
+
+      <p class="meta">
+        <strong>Severity:</strong> {{ i.severity }}
+      </p>
+
+      <div v-if="i.imageUrl">
+        <p class="meta">Klik på billedet for at åbne</p>
+        <img
+          :src="i.imageUrl"
+          class="thumb"
+          @click="openImage(i.imageUrl)"
+          alt="Issue billede"
+        >
+      </div>
+
+      <button @click="save(i)">💾 Gem ændringer</button>
+    </div>
+
+    <!-- Popup -->
+    <div v-if="selectedImage" class="image-modal" @click="selectedImage = null">
+      <img :src="selectedImage" @click.stop alt="Stort billede">
+    </div>
+  </div>
+</main>
+
+<footer>
+  Campus Support – Rengøring
+</footer>
+
+<script src="Rengøring.js"></script>
+</body>
+</html>

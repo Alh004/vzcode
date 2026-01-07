@@ -1,0 +1,174 @@
+:root {
+  --bg-black: #000000;
+  --yellow: #f6f28c;
+  --yellow-border: #e6df7a;
+  --white: #ffffff;
+  --text-black: #000000;
+  --muted: #6f6f6f;
+}
+
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* BODY */
+body {
+  background: var(--white);
+  color: var(--text-black);
+  min-height: 100vh;
+}
+
+/* =====================
+   TOPBAR / HEADER
+===================== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 48px;
+  background: var(--bg-black);
+  border-bottom: 2px solid var(--yellow-border);
+}
+
+.logo {
+  color: var(--yellow);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+}
+
+.topbar nav a {
+  color: var(--white);
+  text-decoration: none;
+  margin-left: 36px;
+  font-weight: 500;
+}
+
+.topbar nav a.active,
+.topbar nav a:hover {
+  color: var(--yellow);
+}
+
+/* =====================
+   CONTENT
+===================== */
+.container {
+  padding: 80px 48px;
+  background: var(--white);
+}
+
+h1 {
+  font-size: 56px;
+  font-weight: 600;
+  color: var(--text-black);
+  margin-bottom: 48px;
+}
+
+/* =====================
+   BUTTON
+===================== */
+.primary-btn {
+  background: var(--yellow);
+  color: var(--bg-black);
+  border: none;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 40px;
+}
+
+.primary-btn:hover {
+  opacity: 0.9;
+}
+
+/* =====================
+   CARDS
+===================== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.card {
+  background: var(--white);
+  border: 2px solid var(--yellow-border);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card h2 {
+  color: var(--bg-black);
+  font-size: 20px;
+}
+
+.card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-black);
+}
+
+/* =====================
+   IMAGES (FIX)
+===================== */
+.issue-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px 0;
+  border-radius: 6px;
+}
+
+/* Hvis der er flere billeder */
+.image-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =====================
+   TEXT HELPERS
+===================== */
+.muted {
+  color: var(--muted);
+}
+
+.error {
+  color: #c62828;
+  margin-bottom: 16px;
+}
+
+/* =====================
+   FOOTER
+===================== */
+.footer {
+  background: var(--bg-black);
+  color: var(--yellow);
+  text-align: center;
+  padding: 18px;
+  margin-top: 60px;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 40px 20px;
+  }
+
+  h1 {
+    font-size: 38px;
+  }
+
+  .topbar {
+    padding: 16px 20px;
+  }
+}

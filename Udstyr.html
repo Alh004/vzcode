@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <title>Campus | Udstyr – Sager</title>
+
+  <!-- Theme -->
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- Vue + Axios -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <style>
+    .thumb {
+      max-width: 180px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .muted { opacity: 0.7; }
+
+    /* Stor popup */
+    .image-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .image-modal img {
+      max-width: 95vw;
+      max-height: 95vh;
+      border-radius: 12px;
+    }
+
+    .meta {
+      font-size: 0.95em;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+
+<body>
+<header class="topbar">
+  <div class="logo">Campus</div>
+  <nav>
+    <a href="index.html">Rooms</a>
+    <a class="active" href="issues-udstyr.html">Udstyr</a>
+  </nav>
+</header>
+
+<main class="container">
+  <h1>Udstyr – Sager</h1>
+
+  <div id="app">
+    <p class="error" v-if="error">{{ error }}</p>
+
+    <div class="card-grid" v-if="issues.length">
+      <div class="card" v-for="i in issues" :key="i.idissue">
+
+        <h2>{{ i.title }}</h2>
+        <p>{{ i.description }}</p>
+
+        <!-- Room info (RoomName vises kun hvis API sender roomName) -->
+        <p class="meta">
+          <strong>Room:</strong>
+          <span v-if="i.roomName">{{ i.roomName }} </span>
+          <span>(ID: {{ i.roomId ?? '—' }})</span>
+        </p>
+
+        <p>
+          <strong>Status</strong><br>
+          <select v-model="i.status">
+            <option>Ny</option>
+            <option>I gang</option>
+            <option>Lukket</option>
+          </select>
+        </p>
+
+        <p>
+          <strong>Severity</strong><br>
+          <select v-model="i.severity">
+            <option>Lav</option>
+            <option>Middel</option>
+            <option>Høj</option>
+          </select>
+        </p>
+
+        <!-- Billede: klik -> stor popup -->
+        <div v-if="i.imageUrl">
+          <p class="muted">Klik på billedet for at åbne stort</p>
+          <img
+            :src="i.imageUrl"
+            class="thumb"
+            alt="Issue billede"
+            @click="openImage(i.imageUrl)"
+          >
+        </div>
+
+        <button class="primary-btn" @click="save(i)">
+          💾 Gem ændringer
+        </button>
+      </div>
+    </div>
+
+    <p v-else class="muted">Ingen Udstyr-sager fundet…</p>
+
+    <!-- Popup -->
+    <div
+      v-if="selectedImage"
+      class="image-modal"
+      @click="selectedImage = null"
+    >
+      <!-- stop klik på selve billedet fra at lukke -->
+      <img :src="selectedImage" alt="Stort billede" @click.stop>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  Campus Support
+</footer>
+
+<script src="./Udstyr.js"></script>
+</body>
+</html>

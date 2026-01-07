@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus | Issues</title>
+
+    <!-- ZEALAND THEME -->
+    <link rel="stylesheet" href="./css/style.css">
+
+    <!-- Axios + Vue -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+    <div class="logo">Campus</div>
+    <nav>
+        
+        <a href="index.html">Rooms</a>
+        <a class="active" href="issues.html">Issues</a>
+    </nav>
+</header>
+
+<main class="container">
+    <h1>Issues</h1>
+
+    <div id="app">
+        <button class="primary-btn" @click="getAllIssues">
+            Load Issues
+        </button>
+
+        <p class="error" v-if="error">{{ error }}</p>
+
+        <div class="card-grid" v-if="issues.length">
+            <div class="card" v-for="issue in issues" :key="issue.idissue">
+                <h2>{{ issue.title }}</h2>
+
+                <p>{{ issue.description }}</p>
+
+                <p><strong>Status:</strong> {{ issue.status }}</p>
+                <p><strong>Severity:</strong> {{ issue.severity }}</p>
+                <p><strong>Room ID:</strong> {{ issue.roomId }}</p>
+                <p><strong>Category ID:</strong> {{ issue.categoryId }}</p>
+            </div>
+        </div>
+
+        <p v-else class="muted">No issues loaded yet…</p>
+    </div>
+</main>
+
+<script src="./issues.js"></script>
+</body>
+</html>

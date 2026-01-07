@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Campus | Indberet Problem</title>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <style>
+    /* ===== BASE ===== */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: #000;
+      color: #ffd400;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+
+    header nav a {
+      color: #ffd400;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    header nav a.active {
+      text-decoration: underline;
+    }
+
+    /* ===== LAYOUT ===== */
+    main {
+      padding: 30px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 12px;
+      background: #000;
+      color: #ffd400;
+      border: none;
+      width: 100%;
+      margin-top: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    img.preview {
+      max-width: 100%;
+      margin-top: 12px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+    }
+
+    .success {
+      color: green;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #b00020;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    .meta {
+      opacity: 0.85;
+      margin-top: 6px;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #000;
+      color: #ffd400;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Campus</div>
+  <nav>
+    <a href="index.html">Rooms</a>
+    <a class="active" href="report.html">Indberet</a>
+  </nav>
+</header>
+
+<main>
+  <div id="app" class="card">
+
+    <h2>Indberet et problem</h2>
+    <p class="meta" v-if="roomId">Rum ID: <b>{{ roomId }}</b></p>
+    <p class="error" v-if="!roomId">Fejl: Room mangler i URL (?room=1)</p>
+
+    <label>Titel</label>
+    <input v-model="title" placeholder="Fx 'Projektor virker ikke'">
+
+    <label>Beskrivelse</label>
+    <textarea v-model="description" placeholder="Beskriv problemet kort og præcist..."></textarea>
+
+    <label>Billede (valgfri)</label>
+    <input type="file" accept="image/*" @change="uploadImage">
+    <img v-if="imageUrl" class="preview" :src="imageUrl" alt="Preview">
+
+    <label>Skolemail</label>
+    <input v-model="email" type="email" placeholder="navn@edu.zealand.dk">
+
+    <button
+      @click="submitReport"
+      :disabled="submitting || !roomId"
+    >
+      {{ submitting ? "Sender..." : "Send indberetning" }}
+    </button>
+
+    <p class="success" v-if="successMessage">{{ successMessage }}</p>
+    <p class="error" v-if="errorMessage">{{ errorMessage }}</p>
+
+  </div>
+</main>
+
+<footer>
+  Campus Support – Indberetning
+</footer>
+
+<script src="report.js"></script>
+</body>
+</html>
