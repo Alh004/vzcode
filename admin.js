@@ -5,12 +5,24 @@ Vue.createApp({
     return {
       issues: [],
       error: null,
-      selectedImage: null
+      selectedImage: null,
+      filterStatus: "alle"
     };
   },
 
   mounted() {
     this.load();
+  },
+
+  computed: {
+    filteredIssues() {
+      if (this.filterStatus === "alle") {
+        return this.issues;
+      }
+      return this.issues.filter(
+        i => i.status === this.filterStatus
+      );
+    }
   },
 
   methods: {
