@@ -15,7 +15,6 @@
       background: #f4f4f4;
     }
 
-    /* ===== HEADER ===== */
     header {
       background: #000;
       color: #ffd400;
@@ -41,7 +40,6 @@
       text-decoration: underline;
     }
 
-    /* ===== LAYOUT ===== */
     main {
       padding: 30px;
       max-width: 1100px;
@@ -49,7 +47,7 @@
     }
 
     h1 {
-      margin-bottom: 25px;
+      margin-bottom: 15px;
     }
 
     .card {
@@ -82,11 +80,6 @@
       margin-top: 10px;
     }
 
-    button:hover {
-      opacity: 0.9;
-    }
-
-    /* ===== IMAGE ===== */
     .thumb {
       max-width: 200px;
       border-radius: 10px;
@@ -110,7 +103,6 @@
       border-radius: 12px;
     }
 
-    /* ===== FOOTER ===== */
     footer {
       background: #000;
       color: #ffd400;
@@ -136,16 +128,28 @@
   <h1>Admin – Alle sager</h1>
 
   <div id="app">
+
+    <!-- STATUS-FILTER -->
+    <div style="margin-bottom:20px">
+      <label><strong>Filtrer efter status</strong></label>
+      <select v-model="filterStatus">
+        <option value="alle">Alle</option>
+        <option>Ny</option>
+        <option>I gang</option>
+        <option>Lukket</option>
+      </select>
+    </div>
+
     <p v-if="error" style="color:red">{{ error }}</p>
 
-    <div v-for="i in issues" :key="i.idissue" class="card">
+    <!-- FILTREREDE SAGER -->
+    <div v-for="i in filteredIssues" :key="i.idissue" class="card">
+
       <h3>{{ i.title }}</h3>
       <p>{{ i.description }}</p>
 
-      <!-- ✅ KORREKT Room-visning -->
       <p class="meta">
-        <b>Room:</b> {{ i.roomName || "Ukendt" }}
-        (ID: {{ i.roomId || "—" }})
+        <b>Room:</b> {{ i.roomName || "Ukendt" }} (ID: {{ i.roomId || "—" }})
       </p>
 
       <p>
@@ -188,10 +192,11 @@
       <button @click="save(i)">💾 Gem ændringer</button>
     </div>
 
-    <!-- Popup -->
+    <!-- POPUP -->
     <div v-if="selectedImage" class="image-modal" @click="selectedImage = null">
       <img :src="selectedImage" @click.stop>
     </div>
+
   </div>
 </main>
 
