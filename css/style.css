@@ -5,7 +5,13 @@
   --white: #ffffff;
   --text-black: #000000;
   --muted: #6f6f6f;
+
+  /* ✅ STATUS FARVER */
+  --success-green: #2e7d32;   /* Sendt */
+  --error-red: #c62828;       /* Fejl / ikke sendt */
+  --warning-yellow: #f9a825;  /* Sender */
 }
+
 
 /* Reset */
 * {

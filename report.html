@@ -2,14 +2,27 @@
 <html lang="da">
 <head>
   <meta charset="UTF-8">
-  <title>Campus | Indberet Problem</title>
 
+  <!--
+    Klar og domænespecifik titel
+    → Nielsen: Match between system and the real world
+  -->
+
+  <!-- Theme -->
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- Vue + Axios -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <style>
     /* ===== BASE ===== */
     body {
+      /*
+        Neutral baggrund skaber kontrast til kortet
+        → Gestalt: Figur / baggrund
+        → Nielsen: Aesthetic and minimalist design
+      */
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f4f4;
@@ -17,8 +30,13 @@
 
     /* ===== HEADER ===== */
     header {
+      /*
+        Mørk header adskiller navigation fra indhold
+        → Gestalt: Figur / baggrund
+        → Nielsen: Consistency and standards
+      */
       background: #000;
-      color: #ffd400;
+      color: var(--yellow);
       padding: 16px 24px;
       display: flex;
       justify-content: space-between;
@@ -31,13 +49,21 @@
     }
 
     header nav a {
-      color: #ffd400;
+      /*
+        Navigation i samme farve og stil på tværs af systemet
+        → Nielsen: Consistency and standards
+      */
+      color: var(--yellow);
       margin-left: 20px;
       text-decoration: none;
       font-weight: 500;
     }
 
     header nav a.active {
+      /*
+        Aktiv side markeres tydeligt
+        → Nielsen: Visibility of system status
+      */
       text-decoration: underline;
     }
 
@@ -49,6 +75,10 @@
     }
 
     .card {
+      /*
+        Hele formularen er samlet i ét kort
+        → Gestalt: Common region
+      */
       background: #fff;
       border-radius: 12px;
       padding: 22px;
@@ -56,6 +86,11 @@
     }
 
     label {
+      /*
+        Label og input placeres tæt
+        → Gestalt: Nærhed (proximity)
+        → Nielsen: Recognition rather than recall
+      */
       display: block;
       margin-top: 12px;
       font-weight: bold;
@@ -76,9 +111,15 @@
     }
 
     button {
+      /*
+        Primær handling (Send indberetning)
+        Mørk baggrund + gul tekst = høj kontrast
+        → Nielsen: Visibility of system status
+        → Farver bruges bevidst til handling
+      */
       padding: 12px;
       background: #000;
-      color: #ffd400;
+      color: var(--yellow);
       border: none;
       width: 100%;
       margin-top: 16px;
@@ -88,11 +129,20 @@
     }
 
     button:disabled {
+      /*
+        Deaktiveret tilstand er tydelig
+        → Nielsen: Error prevention
+      */
       opacity: 0.6;
       cursor: not-allowed;
     }
 
     img.preview {
+      /*
+        Preview vises tæt på upload-felt
+        → Gestalt: Nærhed
+        → Brugeren forstår sammenhæng
+      */
       max-width: 100%;
       margin-top: 12px;
       border-radius: 10px;
@@ -100,26 +150,42 @@
     }
 
     .success {
+      /*
+        Grøn farve signalerer succes
+        → Nielsen: Visibility of system status
+      */
       color: green;
       margin-top: 15px;
       font-weight: bold;
     }
 
     .error {
+      /*
+        Rød farve signalerer fejl
+        → Nielsen: Help users recognize and diagnose errors
+      */
       color: #b00020;
       margin-top: 12px;
       font-weight: bold;
     }
 
     .meta {
+      /*
+        Sekundær information nedtones
+        → Nielsen: Aesthetic and minimalist design
+      */
       opacity: 0.85;
       margin-top: 6px;
     }
 
     /* ===== FOOTER ===== */
     footer {
+      /*
+        Footer adskilt visuelt fra funktionelt indhold
+        → Gestalt: Figur / baggrund
+      */
       background: #000;
-      color: #ffd400;
+      color: var(--yellow);
       text-align: center;
       padding: 15px;
       margin-top: 40px;
@@ -140,7 +206,16 @@
 <main>
   <div id="app" class="card">
 
+    <!--
+      Klar formularoverskrift
+      → Nielsen: Visibility of system status
+    -->
     <h2>Indberet et problem</h2>
+
+    <!--
+      Kontekst vises automatisk via QR (roomId)
+      → Nielsen: Recognition rather than recall
+    -->
     <p class="meta" v-if="roomId">Rum ID: <b>{{ roomId }}</b></p>
     <p class="error" v-if="!roomId">Fejl: Room mangler i URL (?room=1)</p>
 
@@ -148,22 +223,41 @@
     <input v-model="title" placeholder="Fx 'Projektor virker ikke'">
 
     <label>Beskrivelse</label>
-    <textarea v-model="description" placeholder="Beskriv problemet kort og præcist..."></textarea>
+    <textarea v-model="description"
+      placeholder="Beskriv problemet kort og præcist..."></textarea>
 
     <label>Billede (valgfri)</label>
     <input type="file" accept="image/*" @change="uploadImage">
     <img v-if="imageUrl" class="preview" :src="imageUrl" alt="Preview">
 
     <label>Skolemail</label>
-    <input v-model="email" type="email" placeholder="navn@edu.zealand.dk">
+    <input v-model="email" type="email"
+      placeholder="navn@edu.zealand.dk">
 
+    <!--
+      Primær handling tydeliggjort med farve og størrelse
+      → Nielsen: Visibility of system status
+      → Nielsen: User control and freedom
+    -->
     <button
-      @click="submitReport"
-      :disabled="submitting || !roomId"
-    >
-      {{ submitting ? "Sender..." : "Send indberetning" }}
-    </button>
+  class="primary-btn"
+  :class="{
+    error: errorMessage && !successMessage,
+    loading: submitting,
+    success: successMessage
+  }"
+  :disabled="submitting || !roomValidated"
+  @click="submitReport">
+  <span v-if="submitting">⏳ Sender…</span>
+  <span v-else-if="successMessage">✔ Sendt</span>
+  <span v-else>✖ Ikke sendt</span>
+</button>
 
+
+    <!--
+      Feedback efter handling
+      → Nielsen: Visibility of system status
+    -->
     <p class="success" v-if="successMessage">{{ successMessage }}</p>
     <p class="error" v-if="errorMessage">{{ errorMessage }}</p>
 

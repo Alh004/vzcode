@@ -1,66 +1,47 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+
+  <!--
+    Klar og beskrivende titel
+    → Nielsen: Match between system and the real world
+  -->
   <title>Campus | Rengøring – Sager</title>
 
+  <!-- Theme -->
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- Vue + Axios -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-    }
-
-    header {
-      background: #000;
-      color: #ffd400;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header .logo {
-      font-size: 1.4em;
-      font-weight: bold;
-    }
-
-    header nav a {
-      color: #ffd400;
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    header nav a.active {
-      text-decoration: underline;
-    }
-
-    main {
-      padding: 30px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-
     .thumb {
-      max-width: 200px;
+      /*
+        Lille forhåndsvisning signalerer klikbarhed
+        → Nielsen: Recognition rather than recall
+      */
+      max-width: 180px;
       border-radius: 10px;
       cursor: pointer;
       margin-top: 10px;
     }
 
+    .muted {
+      /*
+        Nedtonet tekst til sekundær information
+        → Nielsen: Aesthetic and minimalist design
+      */
+      opacity: 0.7;
+    }
+
     .image-modal {
+      /*
+        Modal adskiller tydeligt forgrund og baggrund
+        → Gestalt: Figur / baggrund
+        → Nielsen: Visibility of system status
+      */
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.85);
@@ -68,6 +49,7 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
+      padding: 20px;
     }
 
     .image-modal img {
@@ -76,39 +58,53 @@
       border-radius: 12px;
     }
 
-    footer {
-      background: #000;
-      color: #ffd400;
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
+    .meta {
+      /*
+        Metadata samlet visuelt
+        → Gestalt: Loven om nærhed (proximity)
+      */
+      font-size: 0.95em;
+      opacity: 0.85;
     }
   </style>
 </head>
 
 <body>
 
-<header>
+<!--
+  Header er konsekvent på tværs af sider
+  → Nielsen: Consistency and standards
+-->
+<header class="topbar">
   <div class="logo">Campus</div>
   <nav>
-    <a href="index.html">Rooms</a>
-    <a href="it.html">IT</a>
-    <a href="issues-udstyr.html">Udstyr</a>
-    <a href="rengoering.html" class="active">Rengøring</a>
-    <a href="administrativ.html">Administrativ</a>
-    <a href="admin.html">Admin</a>
+    <a href="pagelogin.html">Menu</a>
   </nav>
 </header>
 
-<main>
+<main class="container">
+
+  <!--
+    Klar sidespecifik overskrift
+    → Nielsen: Visibility of system status
+  -->
   <h1>Rengøring – Sager</h1>
 
   <div id="app">
-    <p v-if="error" style="color:red">{{ error }}</p>
 
-    <!-- ✅ STATUS FILTER -->
+    <!--
+      Fejl vises tydeligt og kun ved behov
+      → Nielsen: Help users recognize and diagnose errors
+    -->
+    <p class="error" v-if="error">{{ error }}</p>
+
+    <!--
+      Status-filter
+      → Nielsen: Flexibility and efficiency of use
+      → Brugeren kan hurtigt afgrænse indhold
+    -->
     <div style="margin-bottom:20px">
-      <label><strong>Filtrer efter status</strong></label>
+      <label><strong>Filtrer efter status</strong></label><br>
       <select v-model="filterStatus">
         <option value="alle">Alle</option>
         <option>Ny</option>
@@ -117,44 +113,103 @@
       </select>
     </div>
 
-    <!-- ❗ BRUGER filteredIssues -->
-    <div v-for="i in filteredIssues" :key="i.idissue" class="card">
-      <h3>{{ i.title }}</h3>
-      <p>{{ i.description }}</p>
+    <!--
+      Kort-layout
+      → Gestalt: Common region
+      → Hver sag opfattes som én samlet enhed
+    -->
+    <div class="card-grid" v-if="filteredIssues.length">
 
-      <p>
-        <strong>Status</strong>
-        <select v-model="i.status">
-          <option>Ny</option>
-          <option>I gang</option>
-          <option>Lukket</option>
-        </select>
-      </p>
+      <!--
+        Ens struktur for alle sager
+        → Gestalt: Ensartethed (similarity)
+        → Nielsen: Consistency and standards
+      -->
+      <div class="card" v-for="i in filteredIssues" :key="i.idissue">
 
-      <p><strong>Severity:</strong> {{ i.severity }}</p>
+        <h2>{{ i.title }}</h2>
+        <p>{{ i.description }}</p>
 
-      <div v-if="i.imageUrl">
-        <p>Klik på billedet for at åbne</p>
-        <img
-          :src="i.imageUrl"
-          class="thumb"
-          @click="openImage(i.imageUrl)"
-        >
+        <!--
+          Relateret metadata grupperet
+          → Gestalt: Nærhed
+        -->
+        <p class="meta">
+          <strong>Room:</strong>
+          <span v-if="i.roomName">{{ i.roomName }} </span>
+          <span>(ID: {{ i.roomId ?? '—' }})</span>
+        </p>
+
+        <!--
+          Status-ændring direkte på sagen
+          → Nielsen: User control and freedom
+        -->
+        <p>
+          <strong>Status</strong><br>
+          <select v-model="i.status">
+            <option>Ny</option>
+            <option>I gang</option>
+            <option>Lukket</option>
+          </select>
+        </p>
+
+        <p class="meta">
+          <strong>Severity:</strong> {{ i.severity }}
+        </p>
+
+        <!--
+          Billede som sekundær information
+          → Gestalt: Fokus (focal point) når åbnet
+        -->
+        <div v-if="i.imageUrl">
+          <p class="muted">Klik på billedet for at åbne stort</p>
+          <img
+            :src="i.imageUrl"
+            class="thumb"
+            alt="Issue billede"
+            @click="openImage(i.imageUrl)"
+          >
+        </div>
+
+        <!--
+          Primær handling fremhævet
+          → Nielsen: Visibility of system status
+          → Brugeren ved hvad næste handling er
+        -->
+        <button class="primary-btn" @click="save(i)">
+          💾 Gem ændringer
+        </button>
       </div>
-
-      <button @click="save(i)">💾 Gem ændringer</button>
     </div>
 
-    <div v-if="selectedImage" class="image-modal" @click="selectedImage = null">
-      <img :src="selectedImage" @click.stop>
+    <!--
+      Tom-tilstand forklares tydeligt
+      → Nielsen: Visibility of system status
+    -->
+    <p v-else class="muted">Ingen rengøringssager fundet…</p>
+
+    <!--
+      Modal lukker ved klik udenfor
+      → Nielsen: User control and freedom
+    -->
+    <div
+      v-if="selectedImage"
+      class="image-modal"
+      @click="selectedImage = null"
+    >
+      <img :src="selectedImage" alt="Stort billede" @click.stop>
     </div>
   </div>
 </main>
 
-<footer>
-  Campus Support – Rengøring
+<!--
+  Footer adskilt fra funktionelt indhold
+  → Gestalt: Figur / baggrund
+-->
+<footer class="footer">
+  Campus Support
 </footer>
 
-<script src="Rengøring.js"></script>
+<script src="./Rengøring.js"></script>
 </body>
 </html>

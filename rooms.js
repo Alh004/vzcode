@@ -4,34 +4,18 @@ Vue.createApp({
   data() {
     return {
       rooms: [],
-      error: null,
-
-      newRoom: {
-        roomName: "",
-        building: ""
-      },
-
-      createdRoom: null
+      error: null
     };
   },
 
   mounted() {
+    // Data indlæses automatisk ved load
+    // → Nielsen: Visibility of system status
     this.loadRooms();
   },
 
-  computed: {
-    qrUrl() {
-      if (!this.createdRoom) return "";
-      return `http://127.0.0.1:5501/report.html?room=${this.createdRoom.roomId}`;
-    },
-
-    qrImageUrl() {
-      if (!this.qrUrl) return "";
-      return `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(this.qrUrl)}`;
-    }
-  },
-
   methods: {
+    // ===== DATA =====
     async loadRooms() {
       try {
         const res = await axios.get(api);
@@ -41,26 +25,9 @@ Vue.createApp({
       }
     },
 
-    async createRoom() {
-      if (!this.newRoom.roomName) {
-        alert("Room navn mangler");
-        return;
-      }
-
-      try {
-        const res = await axios.post(api, this.newRoom);
-        this.createdRoom = res.data;
-
-        this.newRoom.roomName = "";
-        this.newRoom.building = "";
-
-        this.loadRooms();
-      } catch (e) {
-        alert("Fejl ved oprettelse af room");
-      }
-    },
-
     async deleteRoom(id) {
+      // Bekræftelse før destruktiv handling
+      // → Nielsen: Error prevention
       if (!confirm("Vil du slette dette room?")) return;
 
       try {
@@ -71,12 +38,58 @@ Vue.createApp({
       }
     },
 
-    // 🔽 DOWNLOAD QR
-    downloadQr() {
+    // ===== QR =====
+    getQrUrl(roomId) {
+      /*
+        Unik URL pr. room
+        → Sikrer entydig kobling mellem fysisk lokale og system
+      */
+      return `http://127.0.0.1:5501/report.html?room=${roomId}`;
+    },
+
+    getQrImageUrl(roomId) {
+      return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(this.getQrUrl(roomId))}`;
+    },
+
+    downloadQr(roomId) {
       const link = document.createElement("a");
-      link.href = this.qrImageUrl;
-      link.download = `room-${this.createdRoom.roomId}-qr.png`;
+      link.href = this.getQrImageUrl(roomId);
+      link.download = `room-${roomId}-qr.png`;
       link.click();
+    },
+
+    printQr(roomId) {
+      const url = this.getQrImageUrl(roomId);
+      const win = window.open("", "_blank");
+
+      win.document.write(`
+        <html>
+          <head>
+            <title>Print QR – Room ${roomId}</title>
+            <style>
+              body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                font-family: Arial;
+              }
+              img {
+                max-width: 80%;
+              }
+            </style>
+          </head>
+          <body>
+            <img src="${url}">
+            <script>
+              window.onload = () => window.print();
+            </script>
+          </body>
+        </html>
+      `);
+
+      win.document.close();
     }
   }
 }).mount("#app");

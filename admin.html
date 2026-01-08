@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+
+  <!--
+    Klar og domænespecifik titel
+    → Nielsen: Match between system and the real world
+  -->
   <title>Campus | Admin</title>
- <!-- Theme -->
+
+  <!-- Theme -->
   <link rel="stylesheet" href="./css/style.css">
 
   <!-- Vue + Axios -->
@@ -11,148 +17,104 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-    }
-
-    header {
-      background: #000;
-  color: var(--yellow);
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header nav a {
-  color: var(--yellow);
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    header nav a.active {
-      text-decoration: underline;
-    }
-
-    main {
-      padding: 30px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    select, input {
-      width: 100%;
-      padding: 6px;
-      margin-top: 4px;
-    }
-
-    button {
-      background: #000;
-      color: var(--yellow);
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
     .thumb {
       max-width: 200px;
-      margin-top: 10px;
+      border-radius: 10px;
       cursor: pointer;
+      margin-top: 10px;
     }
 
     .image-modal {
+      /*
+        Modal skaber tydelig fokus
+        → Gestalt: Figur / baggrund
+        → Nielsen: Visibility of system status
+      */
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.85);
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 9999;
+      padding: 20px;
     }
 
     .image-modal img {
       max-width: 95vw;
       max-height: 95vh;
+      border-radius: 12px;
+    }
+
+    .meta {
+      opacity: 0.85;
+      font-size: 0.95em;
     }
   </style>
 </head>
 
 <body>
 
-<header>
-<header>
+<!--
+  Fælles header for hele systemet
+  → Nielsen: Consistency and standards
+-->
+<header class="topbar">
   <div class="logo">Campus – Admin</div>
-
-  <nav class="nav">
-  
-    <span class="divider"></span>
-
+  <nav>
+    <a href="issues.html">Issues</a>
+    <a href="rooms.html">Rooms</a>
+    <a href="IT.html">IT</a>
+    <a href="Udstyr.html">Udstyr</a>
+    <a href="Rengøring.html">Rengøring</a>
+    <a href="Administrativ.html">Administrativ</a>
+    <a href="pagelogin.html">Menu</a>
   </nav>
 </header>
-  <nav>
-      <a href="/issues.html">Issues</a>
-    <a href="/rooms.html">Rooms</a>
 
-    <a href="/it.html">IT</a>
-    <a href="/udstyr.html">Udstyr</a>
-    <a href="/cleaning.html">Rengøring</a>
-    <a href="/kontor.html">Kontor</a>
-    </nav>
+<main class="container">
 
-</header>
-
-
-<main>
   <div id="app">
 
-    <!-- OPRET ROOM + QR -->
-<div class="card">
-  <h2>➕ Opret Room</h2>
+    <!-- =========================
+         OPRET ROOM + QR
+         → Gestalt: Common region
+    ========================== -->
+    <div class="card">
+      <h2>➕ Opret Room</h2>
 
-  <label>Room navn</label>
-  <input v-model="newRoom.roomName" placeholder="Fx Lokale 101">
+      <label>Room navn</label>
+      <input v-model="newRoom.roomName" placeholder="Fx Lokale 101">
 
-  <label>Bygning</label>
-  <input v-model="newRoom.building" placeholder="Fx Hovedbygning">
+      <label>Bygning</label>
+      <input v-model="newRoom.building" placeholder="Fx Hovedbygning">
 
-  <button @click="createRoom">Opret room</button>
+      <button class="primary-btn" @click="createRoom">
+        Opret room
+      </button>
 
-  <div v-if="createdRoom" style="margin-top:15px">
-    <p><strong>QR-kode til {{ createdRoom.roomName }}</strong></p>
+      <div v-if="createdRoom" style="margin-top:16px">
+        <p><strong>QR-kode til {{ createdRoom.roomName }}</strong></p>
 
-    <img
-      :src="qrImageUrl"
-      alt="QR kode"
-      style="width:250px; display:block; margin:10px 0"
-    >
+        <img
+          :src="qrImageUrl"
+          alt="QR kode"
+          class="issue-image"
+        >
 
-    <button @click="downloadQr">⬇️ Download QR</button>
-    <button @click="printQr">🖨️ Print QR</button>
+        <div style="margin-top:10px">
+          <button class="primary-btn" @click="downloadQr">⬇ Download QR</button>
+          <button class="primary-btn" @click="printQr">🖨 Print QR</button>
+        </div>
 
-    <p class="meta">{{ qrUrl }}</p>
-  </div>
-</div>
+        <p class="meta">{{ qrUrl }}</p>
+      </div>
+    </div>
 
-
-    <!-- DASHBOARD -->
+    <!-- =========================
+         DASHBOARD
+         → Nielsen: Visibility of system status
+    ========================== -->
     <div class="card">
       <h2>📊 Overblik</h2>
 
@@ -168,10 +130,10 @@
       <p><strong>Gns. løsningstid:</strong> {{ avgResolution }} dage</p>
     </div>
 
-
-    
-
-    <!-- FILTER -->
+    <!-- =========================
+         FILTER
+         → Nielsen: Flexibility and efficiency of use
+    ========================== -->
     <div class="card">
       <label>Filtrer status</label>
       <select v-model="filterStatus">
@@ -182,56 +144,75 @@
       </select>
     </div>
 
-    <!-- ISSUES -->
-    <div
-      v-for="i in filteredIssues"
-      :key="i.idissue"
-      class="card"
-    >
-      <h3>{{ i.title }}</h3>
-      <p>{{ i.description }}</p>
+    <!-- =========================
+         ISSUES
+         → Gestalt: Similarity + Common region
+    ========================== -->
+    <div class="card-grid" v-if="filteredIssues.length">
+      <div class="card" v-for="i in filteredIssues" :key="i.idissue">
 
-      <p><strong>Room ID:</strong> {{ i.roomId }}</p>
+        <h2>{{ i.title }}</h2>
+        <p>{{ i.description }}</p>
 
-      <label>Status</label>
-      <select v-model="i.status">
-        <option>Ny</option>
-        <option>I gang</option>
-        <option>Lukket</option>
-      </select>
+        <p class="meta"><strong>Room ID:</strong> {{ i.roomId }}</p>
 
-      <label>Severity</label>
-      <select v-model="i.severity">
-        <option>Lav</option>
-        <option>Middel</option>
-        <option>Høj</option>
-      </select>
+        <label>Status</label>
+        <select v-model="i.status">
+          <option>Ny</option>
+          <option>I gang</option>
+          <option>Lukket</option>
+        </select>
 
-      <label>Kategori</label>
-      <select v-model.number="i.categoryId">
-        <option :value="null">Ingen</option>
-        <option :value="1">IT</option>
-        <option :value="2">Udstyr</option>
-        <option :value="3">Rengøring</option>
-        <option :value="5">Administrativ</option>
-      </select>
+        <label>Severity</label>
+        <select v-model="i.severity">
+          <option>Lav</option>
+          <option>Middel</option>
+          <option>Høj</option>
+        </select>
 
-      <button @click="save(i)">💾 Gem</button>
+        <label>Kategori</label>
+        <select v-model.number="i.categoryId">
+          <option :value="null">Ingen</option>
+          <option :value="1">IT</option>
+          <option :value="2">Udstyr</option>
+          <option :value="3">Rengøring</option>
+          <option :value="5">Administrativ</option>
+        </select>
 
-      <div v-if="i.imageUrl">
-        <img class="thumb" :src="i.imageUrl" @click="openImage(i.imageUrl)">
+        <button class="primary-btn" @click="save(i)">
+          💾 Gem ændringer
+        </button>
+
+        <div v-if="i.imageUrl">
+          <img
+            class="thumb"
+            :src="i.imageUrl"
+            alt="Issue billede"
+            @click="openImage(i.imageUrl)"
+          >
+        </div>
       </div>
     </div>
 
-    <!-- IMAGE POPUP -->
-    <div v-if="selectedImage" class="image-modal" @click="selectedImage=null">
-      <img :src="selectedImage">
+    <p v-else class="muted">Ingen sager fundet…</p>
+
+    <!-- IMAGE MODAL -->
+    <div
+      v-if="selectedImage"
+      class="image-modal"
+      @click="selectedImage = null"
+    >
+      <img :src="selectedImage" alt="Stort billede" @click.stop>
     </div>
 
-    <p v-if="error" style="color:red">{{ error }}</p>
+    <p class="error" v-if="error">{{ error }}</p>
 
   </div>
 </main>
+
+<footer class="footer">
+  Campus Support – Admin
+</footer>
 
 <script src="admin.js"></script>
 </body>
