@@ -57,7 +57,7 @@ Vue.createApp({
         if (role === "admin" || role === "staff") {
           window.location.href = "admin.html";
         } else {
-          window.location.href = "report.html";
+          window.location.href = "pagelogin.html";
         }
 
       } catch (err) {

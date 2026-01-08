@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Campus | Rooms</title>
+
+  <!-- Theme -->
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- Vue + Axios -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">Campus</div>
+  <nav>
+    <a class="active" href="rooms.html">Rooms</a>
+    <a href="issues.html">Issues</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</header>
+
+<main class="container">
+  <h1>Rooms</h1>
+
+  <div id="app">
+
+    <!-- OPRET ROOM -->
+    <div class="card">
+      <h2>➕ Opret Room</h2>
+
+      <label>Room navn</label>
+      <input v-model="newRoom.roomName">
+
+      <label>Bygning</label>
+      <input v-model="newRoom.building">
+
+      <button class="primary-btn" @click="createRoom">
+        Opret
+      </button>
+
+      <!-- QR -->
+      <div v-if="createdRoom">
+        <p><strong>QR-kode</strong></p>
+
+        <img :src="qrImageUrl" class="issue-image">
+
+        <p class="muted">{{ qrUrl }}</p>
+
+        <button class="primary-btn" @click="downloadQr">
+          Download QR
+        </button>
+      </div>
+    </div>
+
+    <!-- ROOMS LISTE -->
+    <div class="card-grid" v-if="rooms.length">
+      <div class="card" v-for="room in rooms" :key="room.roomId">
+
+        <h2>{{ room.roomName }}</h2>
+        <p><strong>Bygning:</strong> {{ room.building }}</p>
+        <p><strong>Room ID:</strong> {{ room.roomId }}</p>
+
+        <button class="primary-btn" @click="deleteRoom(room.roomId)">
+          🗑 Slet
+        </button>
+      </div>
+    </div>
+
+    <p v-if="error" class="error">{{ error }}</p>
+
+  </div>
+</main>
+
+<script src="./rooms.js"></script>
+</body>
+</html>

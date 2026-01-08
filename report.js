@@ -3,87 +3,108 @@ const api = "http://localhost:5005";
 Vue.createApp({
   data() {
     return {
-      roomId: new URLSearchParams(location.search).get("room"),
+      roomId: null,
+
+      // Form
       title: "",
       description: "",
       email: "",
-      imageUrl: "",
-      successMessage: "",
-      errorMessage: "",
-      submitting: false
+      imageUrl: null,
+
+      // State
+      submitting: false,
+      successMessage: null,
+      errorMessage: null,
+      roomValidated: false
     };
   },
 
-  methods: {
-    async uploadImage(e) {
-      try {
-        this.errorMessage = "";
-        const file = e.target.files[0];
-        if (!file) return;
+  async mounted() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get("room");
 
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("upload_preset", "campfeed");
+    // 🔒 1) Tjek at room findes i URL
+    if (!room || isNaN(room)) {
+      this.errorMessage = "Fejl: Ugyldigt room i URL (?room=1)";
+      return;
+    }
 
-        const r = await fetch(
-          "https://api.cloudinary.com/v1_1/dzppdbkte/image/upload",
-          { method: "POST", body: fd }
-        );
+    const roomId = parseInt(room);
 
-        const json = await r.json();
-        if (!json.secure_url) throw new Error("Billedupload fejlede");
+    // 🔒 2) Tjek at room findes i databasen
+    try {
+      const res = await fetch(`${api}/api/rooms`);
+      if (!res.ok) throw new Error();
 
-        this.imageUrl = json.secure_url;
-      } catch (err) {
-        console.error(err);
-        this.errorMessage = "Kunne ikke uploade billedet.";
+      const rooms = await res.json();
+      const exists = rooms.some(r => r.roomId === roomId);
+
+      if (!exists) {
+        this.errorMessage = "Fejl: Lokalet findes ikke";
+        return;
       }
+
+      // ✅ Room er gyldigt
+      this.roomId = roomId;
+      this.roomValidated = true;
+    } catch {
+      this.errorMessage = "Kunne ikke validere lokale";
+    }
+  },
+
+  methods: {
+    // =========================
+    // BILLEDE UPLOAD
+    // =========================
+    uploadImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageUrl = reader.result;
+      };
+      reader.readAsDataURL(file);
     },
 
+    // =========================
+    // SEND REPORT
+    // =========================
     async submitReport() {
+      this.errorMessage = null;
+      this.successMessage = null;
+
+      if (!this.roomValidated) {
+        this.errorMessage = "Room er ikke valideret";
+        return;
+      }
+
+      if (!this.title || !this.description || !this.email) {
+        this.errorMessage = "Udfyld alle felter";
+        return;
+      }
+
+      this.submitting = true;
+
       try {
-        this.successMessage = "";
-        this.errorMessage = "";
-
-        if (!this.roomId) {
-          this.errorMessage = "Room mangler i URL (?room=1)";
-          return;
-        }
-
-        if (!this.email.endsWith("@edu.zealand.dk")) {
-          this.errorMessage = "Brug din skolemail (@edu.zealand.dk).";
-          return;
-        }
-
-        if (!this.title.trim() || !this.description.trim()) {
-          this.errorMessage = "Udfyld både titel og beskrivelse.";
-          return;
-        }
-
-        this.submitting = true;
-
         const payload = {
-          email: this.email.trim(),
-          title: this.title.trim(),
-          description: this.description.trim(),
-          roomId: Number(this.roomId),
+          roomId: this.roomId,
+          title: this.title,
+          description: this.description,
+          email: this.email,
           imageUrl: this.imageUrl
-          // 🚫 INGEN categoryId (kun admin)
         };
 
-        const res = await axios.post(`${api}/api/report`, payload);
+        await axios.post(`${api}/api/report`, payload);
 
-        // forventer: { issueId: ... } (som din kode gør)
-        this.successMessage = "Sag oprettet! ID: " + res.data.issueId;
-
-        // reset form
+        this.successMessage = "Tak! Din indberetning er sendt.";
         this.title = "";
         this.description = "";
         this.email = "";
-        this.imageUrl = "";
-      } catch (err) {
-        console.error(err);
-        this.errorMessage = "Kunne ikke oprette sag. Prøv igen.";
+        this.imageUrl = null;
+      } catch (e) {
+        this.errorMessage =
+          e.response?.data?.message || "Der opstod en fejl ved indsendelse";
       } finally {
         this.submitting = false;
       }

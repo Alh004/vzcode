@@ -4,9 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Campus | Staff Menu</title>
+ <!-- Theme -->
+  <link rel="stylesheet" href="./css/style.css">
 
-  <!-- Vue 3 -->
+  <!-- Vue + Axios -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 
   <style>
     :root{
@@ -15,7 +19,7 @@
       --text: #111;
       --muted: #666;
       --black: #000;
-      --yellow: #ffd400;
+  color: var(--yellow);
       --shadow: 0 10px 24px rgba(0,0,0,0.10);
       --shadowHover: 0 16px 30px rgba(0,0,0,0.14);
       --radius: 16px;
@@ -252,8 +256,8 @@
           items: [
             { title: "Udstyr", icon: "🧰", href: "Udstyr.html", desc: "Sager om udstyr, inventar og fejl på faciliteter." },
             { title: "IT", icon: "💻", href: "it.html", desc: "Sager om netværk, login, systemer og teknik." },
-            { title: "Rengøring", icon: "🧹", href: "Rengøring.html", desc: "Sager om rengøring og hygiejne i lokaler." },
-            { title: "Administrativ", icon: "📋", href: "Adminstrativ.html", desc: "Administrative henvendelser og interne opgaver." }
+            { title: "Rengøring", icon: "🧹", href: "Cleaning.html", desc: "Sager om rengøring og hygiejne i lokaler." },
+            { title: "Administrativ", icon: "📋", href: "Kontor.html", desc: "Administrative henvendelser og interne opgaver." }
           ]
         };
       },
