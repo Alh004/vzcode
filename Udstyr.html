@@ -21,7 +21,6 @@
 
     .muted { opacity: 0.7; }
 
-    /* Stor popup */
     .image-modal {
       position: fixed;
       inset: 0;
@@ -61,13 +60,24 @@
   <div id="app">
     <p class="error" v-if="error">{{ error }}</p>
 
-    <div class="card-grid" v-if="issues.length">
-      <div class="card" v-for="i in issues" :key="i.idissue">
+    <!-- ✅ STATUS-FILTER (TILFØJET) -->
+    <div style="margin-bottom:20px">
+      <label><strong>Filtrer efter status</strong></label><br>
+      <select v-model="filterStatus">
+        <option value="alle">Alle</option>
+        <option>Ny</option>
+        <option>I gang</option>
+        <option>Lukket</option>
+      </select>
+    </div>
+
+    <!-- ❗ BRUGER filteredIssues -->
+    <div class="card-grid" v-if="filteredIssues.length">
+      <div class="card" v-for="i in filteredIssues" :key="i.idissue">
 
         <h2>{{ i.title }}</h2>
         <p>{{ i.description }}</p>
 
-        <!-- Room info (RoomName vises kun hvis API sender roomName) -->
         <p class="meta">
           <strong>Room:</strong>
           <span v-if="i.roomName">{{ i.roomName }} </span>
@@ -92,7 +102,6 @@
           </select>
         </p>
 
-        <!-- Billede: klik -> stor popup -->
         <div v-if="i.imageUrl">
           <p class="muted">Klik på billedet for at åbne stort</p>
           <img
@@ -117,7 +126,6 @@
       class="image-modal"
       @click="selectedImage = null"
     >
-      <!-- stop klik på selve billedet fra at lukke -->
       <img :src="selectedImage" alt="Stort billede" @click.stop>
     </div>
   </div>

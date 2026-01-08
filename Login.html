@@ -4,45 +4,45 @@
 <meta charset="UTF-8">
 <title>Login</title>
 
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-<style>
-body {
-    font-family: Arial;
-    background: #f4f6f8;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-#app {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    width: 350px;
-    text-align: center;
-}
-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    font-size: 16px;
-}
-button {
-    width: 100%;
-    padding: 12px;
-    background: #4A90E2;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-.error { color: red; margin-top: 10px; }
-.success { color: green; margin-top: 10px; }
-</style>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #app {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      width: 350px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .error { color: red; margin-top: 10px; }
+    .success { color: green; margin-top: 10px; }
+  </style>
 </head>
 
 <body>
@@ -67,63 +67,62 @@ button {
     <div class="success" v-if="success">{{ success }}</div>
 </div>
 
-<script>
-const apiUrl = "https://localhost:7099/api/auth/login";
+  <script>
+    const apiUrl = "https://localhost:7099/api/auth/login";
 
-Vue.createApp({
-    data() {
+    Vue.createApp({
+      data() {
         return {
-            username: "",
-            password: "",
-            error: null,
-            success: null
+          username: "",
+          password: "",
+          error: null,
+          success: null
         };
-    },
+      },
 
-    methods: {
-        login() {
-            this.error = null;
-            this.success = null;
-
-            const trimmedUsername = this.username.trim().toLowerCase();
-
-            if (!trimmedUsername) {
-                this.error = "Username må ikke være tom";
-                return;
-            }
-
-            if (!this.password) {
-                this.error = "Password må ikke være tomt";
-                return;
-            }
-
-            const payload = {
-                Username: trimmedUsername,
-                Password: this.password
-            };
-
-            axios.post(apiUrl, payload, { withCredentials: true })
-                .then(res => {
-                    const role = res.data.role;
-                    this.success = `Logget ind som ${role}`;
-
-                    if (role === "admin") {
-                        // Admin → medarbejderadministration
-                        window.location.assign("staffadministrativ.html");
-                    } else if (role === "staff") {
-                        // Staff → issues
-                        window.location.assign("issues.html");
-                    } else {
-                        // Alt andet er ikke tilladt
-                        this.error = "Adgang nægtet";
-                    }
-                })
-                .catch(err => {
-                    this.error = err.response?.data || "Login fejlede";
-                });
+      computed: {
+        needsPassword() {
+          return this.username.trim().toLowerCase().endsWith("@edu.zealand.dk");
         }
-    }
-}).mount("#app");
-</script>
+      },
+
+      methods: {
+        login() {
+          this.error = null;
+          this.success = null;
+
+          if (!this.username.trim()) {
+            this.error = "Username må ikke være tom";
+            return;
+          }
+
+          if (this.needsPassword && !this.password) {
+            this.error = "Password må ikke være tomt";
+            return;
+          }
+
+          const payload = {
+            Username: this.username.trim(),
+            Password: this.needsPassword ? this.password : null
+          };
+
+          axios.post(apiUrl, payload, { withCredentials: true })
+            .then(res => {
+              const role = res.data.role;
+              this.success = `Logget ind som ${role}`;
+
+              if (role === "admin" || role === "staff") {
+                window.location.assign("issues.html");
+              } else {
+                window.location.assign("report.html");
+              }
+            })
+            .catch(err => {
+              this.error = err.response?.data || "Login fejlede";
+            });
+        }
+      }
+    }).mount("#app");
+  </script>
 </body>
 </html>

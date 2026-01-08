@@ -5,12 +5,22 @@ Vue.createApp({
     return {
       issues: [],
       error: null,
-      selectedImage: null
+      selectedImage: null,
+      filterStatus: "alle"
     };
   },
 
   async mounted() {
     await this.load();
+  },
+
+  computed: {
+    filteredIssues() {
+      if (this.filterStatus === "alle") {
+        return this.issues;
+      }
+      return this.issues.filter(i => i.status === this.filterStatus);
+    }
   },
 
   methods: {
@@ -21,14 +31,11 @@ Vue.createApp({
 
         const allIssues = await r.json();
 
-        // 🏢 KUN ADMINISTRATIV (categoryId = 5)
+        // 🏢 Kun administrativ (categoryId = 5)
         this.issues = allIssues.filter(
           i => Number(i.categoryId) === 5
         );
-
-        console.log("ADMINISTRATIVE ISSUES:", this.issues);
       } catch (e) {
-        console.error(e);
         this.error = e.message;
       }
     },

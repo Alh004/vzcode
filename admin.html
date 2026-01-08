@@ -2,7 +2,9 @@
 <html lang="da">
 <head>
   <meta charset="UTF-8">
-  <title>Campus | Admin – Sager</title>
+  <title>Campus | Admin</title>
+ <!-- Theme -->
+  <link rel="stylesheet" href="./css/style.css">
 
   <!-- Vue + Axios -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -15,23 +17,17 @@
       background: #f4f4f4;
     }
 
-    /* ===== HEADER ===== */
     header {
       background: #000;
-      color: #ffd400;
+  color: var(--yellow);
       padding: 16px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    header .logo {
-      font-size: 1.4em;
-      font-weight: bold;
-    }
-
     header nav a {
-      color: #ffd400;
+  color: var(--yellow);
       margin-left: 20px;
       text-decoration: none;
       font-weight: 500;
@@ -41,15 +37,10 @@
       text-decoration: underline;
     }
 
-    /* ===== LAYOUT ===== */
     main {
       padding: 30px;
       max-width: 1100px;
       margin: auto;
-    }
-
-    h1 {
-      margin-bottom: 25px;
     }
 
     .card {
@@ -60,13 +51,13 @@
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
 
-    .meta {
-      opacity: 0.85;
-      font-size: 0.95em;
-      margin-bottom: 10px;
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
     }
 
-    select {
+    select, input {
       width: 100%;
       padding: 6px;
       margin-top: 4px;
@@ -74,7 +65,7 @@
 
     button {
       background: #000;
-      color: #ffd400;
+      color: var(--yellow);
       border: none;
       padding: 10px 16px;
       border-radius: 6px;
@@ -82,16 +73,10 @@
       margin-top: 10px;
     }
 
-    button:hover {
-      opacity: 0.9;
-    }
-
-    /* ===== IMAGE ===== */
     .thumb {
       max-width: 200px;
-      border-radius: 10px;
-      cursor: pointer;
       margin-top: 10px;
+      cursor: pointer;
     }
 
     .image-modal {
@@ -101,22 +86,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
     }
 
     .image-modal img {
       max-width: 95vw;
       max-height: 95vh;
-      border-radius: 12px;
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      background: #000;
-      color: #ffd400;
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
     }
   </style>
 </head>
@@ -124,80 +98,140 @@
 <body>
 
 <header>
+<header>
   <div class="logo">Campus – Admin</div>
-  <nav>
-    <a href="index.html">Rooms</a>
-    <a href="issues-udstyr.html">Udstyr</a>
-    <a class="active" href="admin.html">Admin</a>
+
+  <nav class="nav">
+  
+    <span class="divider"></span>
+
   </nav>
 </header>
+  <nav>
+      <a href="/issues.html">Issues</a>
+    <a href="/rooms.html">Rooms</a>
+
+    <a href="/it.html">IT</a>
+    <a href="/udstyr.html">Udstyr</a>
+    <a href="/cleaning.html">Rengøring</a>
+    <a href="/kontor.html">Kontor</a>
+    </nav>
+
+</header>
+
 
 <main>
-  <h1>Admin – Alle sager</h1>
-
   <div id="app">
-    <p v-if="error" style="color:red">{{ error }}</p>
 
-    <div v-for="i in issues" :key="i.idissue" class="card">
+    <!-- OPRET ROOM + QR -->
+<div class="card">
+  <h2>➕ Opret Room</h2>
+
+  <label>Room navn</label>
+  <input v-model="newRoom.roomName" placeholder="Fx Lokale 101">
+
+  <label>Bygning</label>
+  <input v-model="newRoom.building" placeholder="Fx Hovedbygning">
+
+  <button @click="createRoom">Opret room</button>
+
+  <div v-if="createdRoom" style="margin-top:15px">
+    <p><strong>QR-kode til {{ createdRoom.roomName }}</strong></p>
+
+    <img
+      :src="qrImageUrl"
+      alt="QR kode"
+      style="width:250px; display:block; margin:10px 0"
+    >
+
+    <button @click="downloadQr">⬇️ Download QR</button>
+    <button @click="printQr">🖨️ Print QR</button>
+
+    <p class="meta">{{ qrUrl }}</p>
+  </div>
+</div>
+
+
+    <!-- DASHBOARD -->
+    <div class="card">
+      <h2>📊 Overblik</h2>
+
+      <label>Periode</label>
+      <select v-model="period">
+        <option :value="7">7 dage</option>
+        <option :value="30">30 dage</option>
+        <option :value="90">90 dage</option>
+      </select>
+
+      <p><strong>Åbne sager:</strong> {{ openCount }}</p>
+      <p><strong>Lukkede (periode):</strong> {{ closedCount }}</p>
+      <p><strong>Gns. løsningstid:</strong> {{ avgResolution }} dage</p>
+    </div>
+
+
+    
+
+    <!-- FILTER -->
+    <div class="card">
+      <label>Filtrer status</label>
+      <select v-model="filterStatus">
+        <option value="alle">Alle</option>
+        <option>Ny</option>
+        <option>I gang</option>
+        <option>Lukket</option>
+      </select>
+    </div>
+
+    <!-- ISSUES -->
+    <div
+      v-for="i in filteredIssues"
+      :key="i.idissue"
+      class="card"
+    >
       <h3>{{ i.title }}</h3>
       <p>{{ i.description }}</p>
 
-      <!-- ✅ KORREKT Room-visning -->
-      <p class="meta">
-        <b>Room:</b> {{ i.roomName || "Ukendt" }}
-        (ID: {{ i.roomId || "—" }})
-      </p>
+      <p><strong>Room ID:</strong> {{ i.roomId }}</p>
 
-      <p>
-        <strong>Status</strong>
-        <select v-model="i.status">
-          <option>Ny</option>
-          <option>I gang</option>
-          <option>Lukket</option>
-        </select>
-      </p>
+      <label>Status</label>
+      <select v-model="i.status">
+        <option>Ny</option>
+        <option>I gang</option>
+        <option>Lukket</option>
+      </select>
 
-      <p>
-        <strong>Severity</strong>
-        <select v-model="i.severity">
-          <option>Lav</option>
-          <option>Middel</option>
-          <option>Høj</option>
-        </select>
-      </p>
+      <label>Severity</label>
+      <select v-model="i.severity">
+        <option>Lav</option>
+        <option>Middel</option>
+        <option>Høj</option>
+      </select>
 
-      <p>
-        <strong>Kategori</strong>
-        <select v-model.number="i.categoryId">
-          <option :value="1">IT</option>
-          <option :value="2">Udstyr</option>
-          <option :value="3">Rengøring</option>
-          <option :value="5">Administrativ</option>
-        </select>
-      </p>
+      <label>Kategori</label>
+      <select v-model.number="i.categoryId">
+        <option :value="null">Ingen</option>
+        <option :value="1">IT</option>
+        <option :value="2">Udstyr</option>
+        <option :value="3">Rengøring</option>
+        <option :value="5">Administrativ</option>
+      </select>
+
+      <button @click="save(i)">💾 Gem</button>
 
       <div v-if="i.imageUrl">
-        <p class="meta">Klik på billedet for at åbne</p>
-        <img
-          :src="i.imageUrl"
-          class="thumb"
-          @click="openImage(i.imageUrl)"
-        >
+        <img class="thumb" :src="i.imageUrl" @click="openImage(i.imageUrl)">
       </div>
-
-      <button @click="save(i)">💾 Gem ændringer</button>
     </div>
 
-    <!-- Popup -->
-    <div v-if="selectedImage" class="image-modal" @click="selectedImage = null">
-      <img :src="selectedImage" @click.stop>
+    <!-- IMAGE POPUP -->
+    <div v-if="selectedImage" class="image-modal" @click="selectedImage=null">
+      <img :src="selectedImage">
     </div>
+
+    <p v-if="error" style="color:red">{{ error }}</p>
+
   </div>
 </main>
-
-<footer>
-  Campus Support – Admin Panel
-</footer>
 
 <script src="admin.js"></script>
 </body>
