@@ -1,129 +1,132 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8" />
-  <title>Login</title>
+<meta charset="UTF-8">
+<title>Login</title>
 
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-  <style>
-    body {
-      font-family: Arial;
-      background: #f4f6f8;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    #app {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      width: 350px;
-      text-align: center;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #4A90E2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .error { color: red; margin-top: 10px; }
-    .success { color: green; margin-top: 10px; }
-  </style>
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f8;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+#app {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    width: 350px;
+    text-align: center;
+}
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.error { color: red; margin-top: 10px; }
+.success { color: green; margin-top: 10px; }
+</style>
 </head>
 
 <body>
-  <div id="app">
+<div id="app">
     <h2>Login</h2>
 
     <input
-      type="text"
-      placeholder="Skriv din @edu.zealand.dk mail"
-      v-model="username"
+        type="text"
+        placeholder="Skriv din @edu.zealand.dk mail"
+        v-model="username"
     />
 
+    <!-- Admin + Staff SKAL have password -->
     <input
-      v-if="needsPassword"
-      type="password"
-      placeholder="Password"
-      v-model="password"
+        v-if="needsPassword"
+        type="password"
+        placeholder="Password"
+        v-model="password"
     />
 
     <button @click="login">Login</button>
 
     <div class="error" v-if="error">{{ error }}</div>
     <div class="success" v-if="success">{{ success }}</div>
-  </div>
+</div>
 
-  <script>
-    const apiUrl = "https://localhost:7099/api/auth/login";
+<script>
+const apiUrl = "https://localhost:7099/api/auth/login";
 
-    Vue.createApp({
-      data() {
+Vue.createApp({
+    data() {
         return {
-          username: "",
-          password: "",
-          error: null,
-          success: null
+            username: "",
+            password: "",
+            error: null,
+            success: null
         };
-      },
+    },
 
-      computed: {
+    computed: {
+        // Admin + Staff bruger password
         needsPassword() {
-          return this.username.trim().toLowerCase().endsWith("@edu.zealand.dk");
+            return this.username.trim().toLowerCase().endsWith("@edu.zealand.dk");
         }
-      },
+    },
 
-      methods: {
+    methods: {
         login() {
-          this.error = null;
-          this.success = null;
+            this.error = null;
+            this.success = null;
 
-          if (!this.username.trim()) {
-            this.error = "Username må ikke være tom";
-            return;
-          }
+            if (!this.username.trim()) {
+                this.error = "Username må ikke være tom";
+                return;
+            }
 
-          if (this.needsPassword && !this.password) {
-            this.error = "Password må ikke være tomt";
-            return;
-          }
+            if (this.needsPassword && !this.password) {
+                this.error = "Password må ikke være tomt";
+                return;
+            }
 
-          const payload = {
-            Username: this.username.trim(),
-            Password: this.needsPassword ? this.password : null
-          };
+            const payload = {
+                Username: this.username.trim(),
+                Password: this.needsPassword ? this.password : null
+            };
 
-          axios.post(apiUrl, payload, { withCredentials: true })
-            .then(res => {
-              const role = res.data.role;
-              this.success = `Logget ind som ${role}`;
+            axios.post(apiUrl, payload, { withCredentials: true })
+                .then(res => {
+                    const role = res.data.role;
+                    this.success = `Logget ind som ${role}`;
 
-              if (role === "admin" || role === "staff") {
-                window.location.assign("issues.html");
-              } else {
-                window.location.assign("report.html");
-              }
-            })
-            .catch(err => {
-              this.error = err.response?.data || "Login fejlede";
-            });
+                    if (role === "admin" || role === "staff") {
+                          window.location.assign("staffadministrativ.html"); // 👈 admin + staff
+                     } else {
+                    window.location.assign("report.html"); // student
+            }
+
+                })
+                .catch(err => {
+                    this.error = err.response?.data || "Login fejlede";
+                });
         }
-      }
-    }).mount("#app");
-  </script>
+    }
+}).mount("#app");
+</script>
 </body>
 </html>
