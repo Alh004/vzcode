@@ -1,193 +1,252 @@
-​
-Ali Hussain​
+ 
 <!DOCTYPE html>
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title>Staff – Administration</title>
+<title>Login</title>
 
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<<<<<<< HEAD
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
 <style>
 body {
 font-family: Arial;
 background: #f4f6f8;
 margin: 0;
-padding: 40px;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
 }
-h1 {
+#app {
+background: white;
+padding: 30px;
+border-radius: 12px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+width: 350px;
 text-align: center;
 }
-.container {
-max-width: 700px;
-margin: auto;
-background: white;
-padding: 25px;
-border-radius: 10px;
-box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
 input {
-padding: 10px;
-margin: 5px 0;
 width: 100%;
+padding: 12px;
+margin-bottom: 15px;
+font-size: 16px;
 }
 button {
-padding: 10px;
-margin-top: 10px;
+width: 100%;
+padding: 12px;
 background: #4A90E2;
 color: white;
 border: none;
-border-radius: 6px;
+border-radius: 8px;
 cursor: pointer;
 }
-button.delete {
-background: #e74c3c;
-}
-.staff {
-border: 1px solid #ddd;
-padding: 10px;
-margin-top: 10px;
-border-radius: 6px;
-}
-.error { color: red; }
-.success { color: green; }
-.sort-btn {
-background: #27ae60;
-margin-bottom: 10px;
-}
+.error { color: red; margin-top: 10px; }
+.success { color: green; margin-top: 10px; }
 </style>
+=======
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #app {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      width: 350px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .error { color: red; margin-top: 10px; }
+    .success { color: green; margin-top: 10px; }
+  </style>
+>>>>>>> e930344f29d015f5ccc04a32c414a326fb41bd97
 </head>
 
 <body>
-<div id="app" class="container" v-if="authorized">
-
-<h1>Staff – Administration</h1>
-
-<!-- OPRET STAFF -->
-<h3>➕ Opret ny medarbejder</h3>
+<div id="app">
+<<<<<<< HEAD
+<h2>Login</h2>
 
 <input
 type="text"
-placeholder="Username (@edu.zealand.dk)"
-v-model="newUsername"
+placeholder="Skriv din @edu.zealand.dk mail"
+v-model="username"
 />
 
 <input
 type="password"
 placeholder="Password"
-v-model="newPassword"
+v-model="password"
 />
+=======
+    <h2>Login</h2>
 
-<button @click="createStaff">Opret staff</button>
+    <input
+        type="text"
+        placeholder="Skriv din @edu.zealand.dk mail"
+        v-model="username"
+    />
 
-<p class="error" v-if="error">{{ error }}</p>
-<p class="success" v-if="success">{{ success }}</p>
+    <input
+        type="password"
+        placeholder="Password"
+        v-model="password"
+    />
+>>>>>>> e930344f29d015f5ccc04a32c414a326fb41bd97
 
-<hr>
+<button @click="login">Login</button>
 
-<!-- SORT KNAP -->
-<button class="sort-btn" @click="toggleSort">
-Sortér: {{ sortAscending ? 'A → Z' : 'Z → A' }}
-</button>
-
-<!-- LIST STAFF -->
-<h3>👥 Medarbejdere ({{ staff.length }})</h3>
-
-<div v-for="s in sortedStaff" :key="s.id" class="staff">
-<strong>{{ s.username }}</strong>
-<br>
-<button class="delete" @click="deleteStaff(s.id)">
-🗑 Slet
-</button>
-</div>
-
+<<<<<<< HEAD
+<div class="error" v-if="error">{{ error }}</div>
+<div class="success" v-if="success">{{ success }}</div>
 </div>
 
 <script>
-const api = "https://localhost:7099/api/admin/staff";
+const apiUrl = "https://localhost:7099/api/auth/login";
 
 Vue.createApp({
 data() {
 return {
-staff: [],
-newUsername: "",
-newPassword: "",
+username: "",
+password: "",
 error: null,
-success: null,
-authorized: false,
-sortAscending: true
+success: null
 };
 },
 
-async mounted() {
-await this.checkAuth();
-},
-
-computed: {
-sortedStaff() {
-return [...this.staff].sort((a, b) => {
-if (this.sortAscending) {
-return a.username.localeCompare(b.username);
-} else {
-return b.username.localeCompare(a.username);
-}
-});
-}
-},
-
 methods: {
-toggleSort() {
-this.sortAscending = !this.sortAscending;
-},
-
-async checkAuth() {
-try {
-const res = await axios.get(api, { withCredentials: true });
-this.staff = res.data; // 👈 ALLE staff fra databasen
-this.authorized = true; // 👈 bruger er logget ind
-} catch (err) {
-// ❌ Ikke logget ind → redirect
-window.location.href = "Login.html";
-}
-},
-
-async createStaff() {
+login() {
 this.error = null;
 this.success = null;
 
-if (!this.newUsername || !this.newPassword) {
-this.error = "Alle felter skal udfyldes";
+const trimmedUsername = this.username.trim().toLowerCase();
+
+if (!trimmedUsername) {
+this.error = "Username må ikke være tom";
 return;
 }
 
-try {
-await axios.post(api, {
-username: this.newUsername,
-password: this.newPassword
-}, { withCredentials: true });
-
-this.success = "Staff oprettet";
-this.newUsername = "";
-this.newPassword = "";
-await this.checkAuth(); // reload liste
-} catch (err) {
-this.error = err.response?.data || "Fejl ved oprettelse";
+if (!this.password) {
+this.error = "Password må ikke være tomt";
+return;
 }
-},
 
-async deleteStaff(id) {
-if (!confirm("Er du sikker?")) return;
+const payload = {
+Username: trimmedUsername,
+Password: this.password
+};
 
-try {
-await axios.delete(`${api}/${id}`, { withCredentials: true });
-await this.checkAuth(); // reload liste
-} catch {
-alert("Kun admin/staff kan slette");
+axios.post(apiUrl, payload, { withCredentials: true })
+.then(res => {
+const role = res.data.role;
+this.success = `Logget ind som ${role}`;
+
+if (role === "admin") {
+// Admin → medarbejderadministration
+window.location.assign("staffadministrativ.html");
+} else if (role === "staff") {
+// Staff → issues
+window.location.assign("issues.html");
+} else {
+// Alt andet er ikke tilladt
+this.error = "Adgang nægtet";
 }
+})
+.catch(err => {
+this.error = err.response?.data || "Login fejlede";
+});
 }
 }
 }).mount("#app");
 </script>
+=======
+    <div class="error" v-if="error">{{ error }}</div>
+    <div class="success" v-if="success">{{ success }}</div>
+</div>
 
+  <script>
+    const apiUrl = "https://localhost:7099/api/auth/login";
+
+    Vue.createApp({
+      data() {
+        return {
+          username: "",
+          password: "",
+          error: null,
+          success: null
+        };
+      },
+
+      computed: {
+        needsPassword() {
+          return this.username.trim().toLowerCase().endsWith("@edu.zealand.dk");
+        }
+      },
+
+      methods: {
+        login() {
+          this.error = null;
+          this.success = null;
+
+          if (!this.username.trim()) {
+            this.error = "Username må ikke være tom";
+            return;
+          }
+
+          if (this.needsPassword && !this.password) {
+            this.error = "Password må ikke være tomt";
+            return;
+          }
+
+          const payload = {
+            Username: this.username.trim(),
+            Password: this.needsPassword ? this.password : null
+          };
+
+          axios.post(apiUrl, payload, { withCredentials: true })
+            .then(res => {
+              const role = res.data.role;
+              this.success = `Logget ind som ${role}`;
+
+              if (role === "admin" || role === "staff") {
+                window.location.assign("issues.html");
+              } else {
+                window.location.assign("report.html");
+              }
+            })
+            .catch(err => {
+              this.error = err.response?.data || "Login fejlede";
+            });
+        }
+      }
+    }).mount("#app");
+  </script>
+>>>>>>> e930344f29d015f5ccc04a32c414a326fb41bd97
 </body>
+</html>
