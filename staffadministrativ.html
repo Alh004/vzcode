@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Staff – Administration</title>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 40px;
+}
+h1 {
+    text-align: center;
+}
+.container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+input {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+}
+button {
+    padding: 10px;
+    margin-top: 10px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+button.delete {
+    background: #e74c3c;
+}
+.staff {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+}
+.error { color: red; }
+.success { color: green; }
+.sort-btn {
+    background: #27ae60;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="app" class="container" v-if="authorized">
+
+    <h1>Staff – Administration</h1>
+
+    <!-- OPRET STAFF -->
+    <h3>➕ Opret ny medarbejder</h3>
+
+    <input
+        type="text"
+        placeholder="Username (@edu.zealand.dk)"
+        v-model="newUsername"
+    />
+
+    <input
+        type="password"
+        placeholder="Password"
+        v-model="newPassword"
+    />
+
+    <button @click="createStaff">Opret staff</button>
+
+    <p class="error" v-if="error">{{ error }}</p>
+    <p class="success" v-if="success">{{ success }}</p>
+
+    <hr>
+
+    <!-- SORT KNAP -->
+    <button class="sort-btn" @click="toggleSort">
+        Sortér: {{ sortAscending ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <!-- LIST STAFF -->
+    <h3>👥 Medarbejdere ({{ staff.length }})</h3>
+
+    <div v-for="s in sortedStaff" :key="s.id" class="staff">
+        <strong>{{ s.username }}</strong>
+        <br>
+        <button class="delete" @click="deleteStaff(s.id)">
+            🗑 Slet
+        </button>
+    </div>
+
+</div>
+
+<script>
+const api = "https://localhost:7099/api/admin/staff";
+
+Vue.createApp({
+    data() {
+        return {
+            staff: [],
+            newUsername: "",
+            newPassword: "",
+            error: null,
+            success: null,
+            authorized: false,
+            sortAscending: true
+        };
+    },
+
+    async mounted() {
+        await this.checkAuth();
+    },
+
+    computed: {
+        sortedStaff() {
+            return [...this.staff].sort((a, b) => {
+                if (this.sortAscending) {
+                    return a.username.localeCompare(b.username);
+                } else {
+                    return b.username.localeCompare(a.username);
+                }
+            });
+        }
+    },
+
+    methods: {
+        toggleSort() {
+            this.sortAscending = !this.sortAscending;
+        },
+
+        async checkAuth() {
+            try {
+                const res = await axios.get(api, { withCredentials: true });
+                this.staff = res.data;          // 👈 ALLE staff fra databasen
+                this.authorized = true;         // 👈 bruger er logget ind
+            } catch (err) {
+                // ❌ Ikke logget ind → redirect
+                window.location.href = "login.html";
+            }
+        },
+
+        async createStaff() {
+            this.error = null;
+            this.success = null;
+
+            if (!this.newUsername || !this.newPassword) {
+                this.error = "Alle felter skal udfyldes";
+                return;
+            }
+
+            try {
+                await axios.post(api, {
+                    username: this.newUsername,
+                    password: this.newPassword
+                }, { withCredentials: true });
+
+                this.success = "Staff oprettet";
+                this.newUsername = "";
+                this.newPassword = "";
+                await this.checkAuth(); // reload liste
+            } catch (err) {
+                this.error = err.response?.data || "Fejl ved oprettelse";
+            }
+        },
+
+        async deleteStaff(id) {
+            if (!confirm("Er du sikker?")) return;
+
+            try {
+                await axios.delete(`${api}/${id}`, { withCredentials: true });
+                await this.checkAuth(); // reload liste
+            } catch {
+                alert("Kun admin/staff kan slette");
+            }
+        }
+    }
+}).mount("#app");
+</script>
+
+</body>
+</html>
