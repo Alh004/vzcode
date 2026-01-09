@@ -5,7 +5,13 @@
   --white: #ffffff;
   --text-black: #000000;
   --muted: #6f6f6f;
+
+  /* ✅ STATUS FARVER */
+  --success-green: #2e7d32;   /* Sendt */
+  --error-red: #c62828;       /* Fejl / ikke sendt */
+  --warning-yellow: #f9a825;  /* Sender */
 }
+
 
 /* Reset */
 * {
@@ -156,6 +162,29 @@ h1 {
   margin-top: 60px;
 }
 
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hidden-btn {
+  opacity: 0;
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  color: var(--yellow);
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+/* Vises kun ved hover på Campus */
+.logo-wrapper:hover .hidden-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+  
 /* =====================
    RESPONSIVE
 ===================== */

@@ -2,6 +2,11 @@
 <html lang="da">
 <head>
   <meta charset="UTF-8" />
+
+  <!--
+    Klar og beskrivende titel
+    → Nielsen: Match between system and the real world
+  -->
   <title>Campus | Udstyr – Sager</title>
 
   <!-- Theme -->
@@ -13,15 +18,30 @@
 
   <style>
     .thumb {
+      /*
+        Lille forhåndsvisning signalerer klikbarhed
+        → Nielsen: Recognition rather than recall
+      */
       max-width: 180px;
       border-radius: 10px;
       cursor: pointer;
       margin-top: 10px;
     }
 
-    .muted { opacity: 0.7; }
+    .muted {
+      /*
+        Nedtonet tekst til sekundær information
+        → Nielsen: Aesthetic and minimalist design
+      */
+      opacity: 0.7;
+    }
 
     .image-modal {
+      /*
+        Modal adskiller tydeligt forgrund og baggrund
+        → Gestalt: Figur / baggrund
+        → Nielsen: Visibility of system status
+      */
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.85);
@@ -39,6 +59,10 @@
     }
 
     .meta {
+      /*
+        Metadata samlet visuelt
+        → Gestalt: Loven om nærhed (proximity)
+      */
       font-size: 0.95em;
       opacity: 0.85;
     }
@@ -46,21 +70,39 @@
 </head>
 
 <body>
+
+<!--
+  Header er konsekvent på tværs af sider
+  → Nielsen: Consistency and standards
+-->
 <header class="topbar">
   <div class="logo">Campus</div>
   <nav>
-    <a href="index.html">Rooms</a>
-    <a class="active" href="issues-udstyr.html">Udstyr</a>
+    <a href="pagelogin.html">Menu</a>
   </nav>
 </header>
 
 <main class="container">
+
+  <!--
+    Klar sidespecifik overskrift
+    → Nielsen: Visibility of system status
+  -->
   <h1>Udstyr – Sager</h1>
 
   <div id="app">
+
+    <!--
+      Fejl vises tydeligt og kun ved behov
+      → Nielsen: Help users recognize and diagnose errors
+    -->
     <p class="error" v-if="error">{{ error }}</p>
 
-    <!-- ✅ STATUS-FILTER (TILFØJET) -->
+    <!--
+      Status-filter
+      → Nielsen: Flexibility and efficiency of use
+      → Brugeren kan hurtigt afgrænse indhold
+    -->
     <div style="margin-bottom:20px">
       <label><strong>Filtrer efter status</strong></label><br>
       <select v-model="filterStatus">
@@ -71,19 +113,37 @@
       </select>
     </div>
 
-    <!-- ❗ BRUGER filteredIssues -->
+    <!--
+      Kort-layout
+      → Gestalt: Common region
+      → Hver sag opfattes som én samlet enhed
+    -->
     <div class="card-grid" v-if="filteredIssues.length">
+
+      <!--
+        Ens struktur for alle sager
+        → Gestalt: Ensartethed (similarity)
+        → Nielsen: Consistency and standards
+      -->
       <div class="card" v-for="i in filteredIssues" :key="i.idissue">
 
         <h2>{{ i.title }}</h2>
         <p>{{ i.description }}</p>
 
+        <!--
+          Relateret metadata grupperet
+          → Gestalt: Nærhed
+        -->
         <p class="meta">
           <strong>Room:</strong>
           <span v-if="i.roomName">{{ i.roomName }} </span>
           <span>(ID: {{ i.roomId ?? '—' }})</span>
         </p>
 
+        <!--
+          Status-ændring direkte på sagen
+          → Nielsen: User control and freedom
+        -->
         <p>
           <strong>Status</strong><br>
           <select v-model="i.status">
@@ -102,6 +162,10 @@
           </select>
         </p>
 
+        <!--
+          Billede som sekundær information
+          → Gestalt: Fokus (focal point) når åbnet
+        -->
         <div v-if="i.imageUrl">
           <p class="muted">Klik på billedet for at åbne stort</p>
           <img
@@ -112,15 +176,27 @@
           >
         </div>
 
+        <!--
+          Primær handling fremhævet
+          → Nielsen: Visibility of system status
+          → Brugeren ved hvad næste handling er
+        -->
         <button class="primary-btn" @click="save(i)">
           💾 Gem ændringer
         </button>
       </div>
     </div>
 
+    <!--
+      Tom-tilstand forklares tydeligt
+      → Nielsen: Visibility of system status
+    -->
     <p v-else class="muted">Ingen Udstyr-sager fundet…</p>
 
-    <!-- Popup -->
+    <!--
+      Modal lukker ved klik udenfor
+      → Nielsen: User control and freedom
+    -->
     <div
       v-if="selectedImage"
       class="image-modal"
@@ -131,6 +207,10 @@
   </div>
 </main>
 
+<!--
+  Footer adskilt fra funktionelt indhold
+  → Gestalt: Figur / baggrund
+-->
 <footer class="footer">
   Campus Support
 </footer>

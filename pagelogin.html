@@ -3,29 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!--
+    Titel er klar og domæne-specifik
+    → Nielsen: Match between system and the real world
+  -->
   <title>Campus | Staff Menu</title>
- <!-- Theme -->
+
+  <!-- Theme -->
   <link rel="stylesheet" href="./css/style.css">
 
   <!-- Vue + Axios -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-
   <style>
     :root{
+      /*
+        Farver og variabler bruges konsekvent
+        → Nielsen: Consistency and standards
+      */
       --bg: #f4f4f7;
       --card: #ffffff;
       --text: #111;
       --muted: #666;
       --black: #000;
   color: var(--yellow);
+
       --shadow: 0 10px 24px rgba(0,0,0,0.10);
       --shadowHover: 0 16px 30px rgba(0,0,0,0.14);
       --radius: 16px;
     }
 
     body{
+      /*
+        Enkel og rolig baggrund
+        → Nielsen: Aesthetic and minimalist design
+      */
       margin:0;
       font-family: Arial, sans-serif;
       background: var(--bg);
@@ -34,6 +48,10 @@
 
     /* ===== HEADER ===== */
     header{
+      /*
+        Header adskilt tydeligt fra indhold
+        → Gestalt: Figur / baggrund
+      */
       background: var(--black);
       color: var(--yellow);
       padding: 16px 24px;
@@ -41,19 +59,15 @@
       align-items:center;
       justify-content:space-between;
     }
+
     .logo{
+      /*
+        Klar identifikation af systemets kontekst
+        → Nielsen: Visibility of system status
+      */
       font-size: 1.35rem;
       font-weight: 800;
-      letter-spacing: 0.3px;
     }
-    nav a{
-      color: var(--yellow);
-      text-decoration:none;
-      margin-left: 18px;
-      font-weight: 600;
-      opacity: .95;
-    }
-    nav a:hover{ opacity: 1; text-decoration: underline; }
 
     /* ===== LAYOUT ===== */
     .container{
@@ -63,71 +77,63 @@
     }
 
     .hero{
+      /*
+        Hero-sektion grupperer titel + forklaring
+        → Gestalt: Loven om nærhed (proximity)
+      */
       background: var(--card);
       border-radius: var(--radius);
-      padding: 22px 22px;
-      border: 1px solid rgba(0,0,0,0.06);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      padding: 22px;
       display:flex;
-      gap: 16px;
-      align-items:flex-start;
       justify-content: space-between;
       margin-bottom: 18px;
     }
 
-    .hero h1{
-      margin: 0 0 6px;
-      font-size: 26px;
-    }
-    .hero p{
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
     .badge{
+      /*
+        Badge fungerer som visuelt fokuspunkt
+        → Gestalt: Loven om fokus (focal point)
+      */
       background: #111;
       color: var(--yellow);
       padding: 10px 12px;
       border-radius: 999px;
       font-weight: 700;
       font-size: 12px;
-      white-space: nowrap;
-      align-self: center;
     }
 
     /* ===== GRID ===== */
     .grid{
+      /*
+        Ensartet grid-layout
+        → Gestalt: Ensartethed (similarity)
+      */
       display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
-    }
-    @media (max-width: 820px){
-      .grid{ grid-template-columns: 1fr; }
-      .badge{ display:none; }
     }
 
     /* ===== CARD ===== */
     .card{
+      /*
+        Hvert kort fungerer som én samlet enhed
+        → Gestalt: Common region
+      */
       background: var(--card);
       border-radius: var(--radius);
-      padding: 18px 18px;
-      border: 1px solid rgba(0,0,0,0.06);
+      padding: 18px;
       box-shadow: var(--shadow);
       cursor: pointer;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap: 14px;
-      user-select:none;
       position: relative;
-      overflow: hidden;
-      min-height: 96px;
     }
 
-    /* lille gul accent */
     .card::before{
+      /*
+        Gul venstrestreg skaber visuel sammenhæng
+        → Gestalt: Forbundethed (continuity)
+      */
       content:"";
       position:absolute;
       left:0;
@@ -135,69 +141,53 @@
       bottom:0;
       width: 8px;
       background: var(--yellow);
-      opacity: 0.9;
-    }
-
-    .card:hover{
-      transform: translateY(-2px);
-      box-shadow: var(--shadowHover);
-      border-color: rgba(0,0,0,0.10);
-    }
-
-    .left{
-      padding-left: 10px; /* pga gul streg */
-      display:flex;
-      gap: 12px;
-      align-items:center;
     }
 
     .icon{
+      /*
+        Ikoner hjælper brugeren med genkendelse
+        → Nielsen: Recognition rather than recall
+      */
       width: 44px;
       height: 44px;
       border-radius: 12px;
       display:flex;
       align-items:center;
       justify-content:center;
-      background: rgba(255, 212, 0, 0.18);
-      border: 1px solid rgba(0,0,0,0.06);
+  color: var(--yellow);
       font-size: 20px;
-      flex: 0 0 auto;
     }
 
     .title{
+      /*
+        Klar hierarki: titel > beskrivelse
+        → Nielsen: Aesthetic and minimalist design
+      */
       font-size: 18px;
       font-weight: 800;
-      margin: 0;
     }
+
     .subtitle{
       font-size: 13px;
       color: var(--muted);
-      margin-top: 5px;
-    }
-
-    .right{
-      display:flex;
-      align-items:center;
-      gap: 12px;
     }
 
     .pill{
+      /*
+        Viser destination før klik
+        → Nielsen: Visibility of system status
+      */
       font-size: 12px;
       padding: 8px 10px;
       border-radius: 999px;
       background: #f7f7f7;
-      border: 1px solid rgba(0,0,0,0.08);
-      color: #333;
-      white-space: nowrap;
     }
 
-    .arrow{
-      font-size: 22px;
-      color:#444;
-    }
-
-    /* ===== FOOTER ===== */
     footer{
+      /*
+        Footer tydeligt adskilt fra funktionelt indhold
+        → Gestalt: Figur / baggrund
+      */
       background: var(--black);
       color: var(--yellow);
       text-align:center;
@@ -210,23 +200,28 @@
 <body>
   <header>
     <div class="logo">Campus • Staff</div>
-    <nav>
-      <a href="index.html">Rooms</a>
-      <a href="admin.html">Admin</a>
-    </nav>
   </header>
 
   <div id="app" class="container">
     <div class="hero">
       <div>
         <h1>Vælg kategori</h1>
-        <p>Tryk på en kategori for at se sager og opdatere status/severity. Billeder kan åbnes i stor visning.</p>
+        <p>
+    
+        </p>
       </div>
-      <div class="badge">STAFF MENU</div>
     </div>
 
     <div class="grid">
-      <div class="card" v-for="item in items" :key="item.title" @click="go(item.href)">
+      <!--
+        Alle kort har samme struktur og funktion
+        → Gestalt: Ensartethed
+        → Nielsen: Consistency and standards
+      -->
+      <div class="card"
+           v-for="item in items"
+           :key="item.title"
+           @click="go(item.href)">
         <div class="left">
           <div class="icon">{{ item.icon }}</div>
           <div>
@@ -253,20 +248,28 @@
     createApp({
       data() {
         return {
+          /*
+            Klare, forståelige labels
+            → Nielsen: Match between system and real world
+          */
           items: [
-            { title: "Udstyr", icon: "🧰", href: "Udstyr.html", desc: "Sager om udstyr, inventar og fejl på faciliteter." },
-            { title: "IT", icon: "💻", href: "it.html", desc: "Sager om netværk, login, systemer og teknik." },
-            { title: "Rengøring", icon: "🧹", href: "Cleaning.html", desc: "Sager om rengøring og hygiejne i lokaler." },
-            { title: "Administrativ", icon: "📋", href: "Kontor.html", desc: "Administrative henvendelser og interne opgaver." }
+            { title: "Udstyr", icon: "🧰", href: "Udstyr.html", desc: "Sager om udstyr og inventar." },
+            { title: "IT", icon: "💻", href: "it.html", desc: "Netværk, login og systemer." },
+            { title: "Rengøring", icon: "🧹", href: "Rengøring.html", desc: "Hygiejne og rengøring." },
+            { title: "Administrativ", icon: "📋", href: "adminstrativ.html", desc: "Administrative opgaver." }
           ]
         };
       },
       methods: {
         go(href) {
+          /*
+            Ét klik = tydelig handling
+            → Nielsen: User control and freedom
+          */
           window.location.href = href;
         }
       }
     }).mount("#app");
-  </script>
+  </script> 
 </body>
 </html>

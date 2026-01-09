@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+
+  <!--
+    Klar og genkendelig titel
+    → Nielsen: Match between system and the real world
+  -->
   <title>Campus | Issues</title>
 
   <!-- Theme -->
@@ -11,71 +16,133 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
+
 <body>
 
+<!--
+  Fælles header for staff/admin-sider
+  → Nielsen: Consistency and standards
+-->
 <header class="topbar">
   <div class="logo">Campus</div>
   <nav>
+
     <a href="rooms.html">Rooms</a>
     <a class="active" href="issues.html">Issues</a>
+            <a class="active" href="admin.html">Admin</a>
+
   </nav>
 </header>
 
 <main class="container">
+
+  <!--
+    Klar sideoverskrift
+    → Nielsen: Visibility of system status
+  -->
   <h1>Issues</h1>
 
   <div id="app">
 
-    <!-- FILTER -->
-    <label>Status filter</label>
-    <select v-model="filterStatus">
-      <option value="alle">Alle</option>
-      <option value="open">Åbne</option>
-      <option value="closed">Lukkede</option>
-    </select>
+    <!--
+      Filter og handling samlet
+      → Gestalt: Nærhed (proximity)
+      → Nielsen: Flexibility and efficiency of use
+    -->
+    <div style="margin-bottom:20px">
+      <label><strong>Status filter</strong></label><br>
+      <select v-model="filterStatus">
+        <option value="alle">Alle</option>
+        <option value="open">Åbne</option>
+        <option value="closed">Lukkede</option>
+      </select>
+    </div>
 
+    <!--
+      Primær handling (load)
+      → Nielsen: Visibility of system status
+    -->
     <button class="primary-btn" @click="getAllIssues">
-      Load Issues
+      Indlæs issues
     </button>
 
+    <!--
+      Fejl vises kun ved behov
+      → Nielsen: Help users recognize and diagnose errors
+    -->
     <p class="error" v-if="error">{{ error }}</p>
 
+    <!--
+      Grid-layout for issues
+      → Gestalt: Common region
+    -->
     <div class="card-grid" v-if="filteredIssues.length">
+
+      <!--
+        Ensartede cards
+        → Gestalt: Ensartethed (similarity)
+        → Nielsen: Consistency and standards
+      -->
       <div class="card" v-for="issue in filteredIssues" :key="issue.idissue">
 
         <h2>{{ issue.title }}</h2>
-
         <p>{{ issue.description }}</p>
 
+        <!--
+          Relateret metadata samlet
+          → Gestalt: Nærhed
+        -->
         <p><strong>Status:</strong> {{ issue.status }}</p>
         <p><strong>Severity:</strong> {{ issue.severity }}</p>
 
-        <!-- ROOM -->
+        <!--
+          Lokaleinformation i naturligt sprog
+          → Nielsen: Match between system and the real world
+        -->
         <p>
           <strong>Lokale:</strong>
           {{ issue.roomName || "Room #" + issue.roomId }}
         </p>
 
-        <!-- CLOSED DATE -->
+        <!--
+          Lukket dato vises kun hvis relevant
+          → Nielsen: Aesthetic and minimalist design
+        -->
         <p v-if="issue.closedAt">
           <strong>Lukket:</strong>
           {{ formatDate(issue.closedAt) }}
         </p>
 
-        <!-- DELETE -->
+        <!--
+          Kritisk handling (slet)
+          → Nielsen: Error prevention (bevidst handling)
+        -->
         <button
-          style="background:#c62828;color:white"
+          class="primary-btn danger"
           @click="deleteIssue(issue.idissue)"
         >
-          Slet issue
+          🗑 Slet issue
         </button>
 
       </div>
     </div>
 
+    <!--
+      Tom-tilstand forklares tydeligt
+      → Nielsen: Visibility of system status
+    -->
     <p v-else class="muted">Ingen issues fundet…</p>
+
   </div>
 </main>
+
+<!--
+  Footer adskilt visuelt fra funktionelt indhold
+  → Gestalt: Figur / baggrund
+-->
+<footer class="footer">
+  Campus Support
+</footer>
 
 <script src="./issues.js"></script>
 </body>

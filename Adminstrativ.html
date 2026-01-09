@@ -1,92 +1,48 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+
+  <!--
+    Klar og domænespecifik titel
+    → Nielsen: Match between system and the real world
+  -->
   <title>Campus | Administrativ – Sager</title>
+
+  <!-- Theme -->
+  <link rel="stylesheet" href="./css/style.css">
 
   <!-- Vue + Axios -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-    }
-
-    header {
-      background: #000;
-      color: #ffd400;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header .logo {
-      font-size: 1.4em;
-      font-weight: bold;
-    }
-
-    header nav a {
-      color: #ffd400;
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    header nav a.active {
-      text-decoration: underline;
-    }
-
-    main {
-      padding: 30px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    h1 {
-      margin-bottom: 15px;
-    }
-
-    .card {
-      background: #fff;
+    .thumb {
+      /*
+        Lille forhåndsvisning signalerer klikbarhed
+        → Nielsen: Recognition rather than recall
+      */
+      max-width: 180px;
       border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      margin-top: 10px;
     }
 
     .meta {
+      /*
+        Sekundær information nedtones
+        → Nielsen: Aesthetic and minimalist design
+      */
       opacity: 0.85;
       font-size: 0.95em;
     }
 
-    select {
-      width: 100%;
-      padding: 6px;
-      margin-top: 4px;
-    }
-
-    button {
-      background: #000;
-      color: #ffd400;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .thumb {
-      max-width: 200px;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
     .image-modal {
+      /*
+        Modal adskiller tydeligt forgrund og baggrund
+        → Gestalt: Figur / baggrund
+        → Nielsen: Visibility of system status
+      */
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.85);
@@ -94,6 +50,7 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
+      padding: 20px;
     }
 
     .image-modal img {
@@ -101,36 +58,44 @@
       max-height: 95vh;
       border-radius: 12px;
     }
-
-    footer {
-      background: #000;
-      color: #ffd400;
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
-    }
   </style>
 </head>
 
 <body>
 
-<header>
+<!--
+  Fælles header for alle staff-sider
+  → Nielsen: Consistency and standards
+-->
+<header class="topbar">
   <div class="logo">Campus</div>
   <nav>
-    <a href="index.html">Rooms</a>
-    <a href="issues-udstyr.html">Udstyr</a>
-    <a class="active" href="administrativ.html">Administrativ</a>
+    <a href="pagelogin.html">Menu</a>
   </nav>
 </header>
 
-<main>
+<main class="container">
+
+  <!--
+    Klar sideoverskrift
+    → Nielsen: Visibility of system status
+  -->
   <h1>Administrativ – Sager</h1>
 
   <div id="app">
 
-    <!-- STATUS-FILTER -->
+    <!--
+      Fejl vises tydeligt og kun ved behov
+      → Nielsen: Help users recognize and diagnose errors
+    -->
+    <p class="error" v-if="error">{{ error }}</p>
+
+    <!--
+      Status-filter giver hurtigt overblik
+      → Nielsen: Flexibility and efficiency of use
+    -->
     <div style="margin-bottom:20px">
-      <label><strong>Filtrer efter status</strong></label>
+      <label><strong>Filtrer efter status</strong></label><br>
       <select v-model="filterStatus">
         <option value="alle">Alle</option>
         <option>Ny</option>
@@ -139,48 +104,89 @@
       </select>
     </div>
 
-    <p v-if="error" style="color:red">{{ error }}</p>
+    <!--
+      Kort-layout for sager
+      → Gestalt: Common region
+    -->
+    <div class="card-grid" v-if="filteredIssues.length">
 
-    <!-- VIS FILTREREDE SAGER -->
-    <div v-for="i in filteredIssues" :key="i.idissue" class="card">
+      <!--
+        Ens struktur for alle administrative sager
+        → Gestalt: Ensartethed (similarity)
+        → Nielsen: Consistency and standards
+      -->
+      <div class="card" v-for="i in filteredIssues" :key="i.idissue">
 
-      <h3>{{ i.title }}</h3>
-      <p>{{ i.description }}</p>
+        <h2>{{ i.title }}</h2>
+        <p>{{ i.description }}</p>
 
-      <p>
-        <strong>Status</strong>
-        <select v-model="i.status">
-          <option>Ny</option>
-          <option>I gang</option>
-          <option>Lukket</option>
-        </select>
-      </p>
+        <!--
+          Status kan ændres direkte
+          → Nielsen: User control and freedom
+        -->
+        <p>
+          <strong>Status</strong><br>
+          <select v-model="i.status">
+            <option>Ny</option>
+            <option>I gang</option>
+            <option>Lukket</option>
+          </select>
+        </p>
 
-      <p class="meta">
-        <strong>Severity:</strong> {{ i.severity }}
-      </p>
+        <p class="meta">
+          <strong>Severity:</strong> {{ i.severity }}
+        </p>
 
-      <div v-if="i.imageUrl">
-        <p class="meta">Klik på billedet for at åbne</p>
-        <img
-          :src="i.imageUrl"
-          class="thumb"
-          @click="openImage(i.imageUrl)"
-        >
+        <!--
+          Billede som sekundært indhold
+          → Gestalt: Fokus (focal point) når åbnet
+        -->
+        <div v-if="i.imageUrl">
+          <p class="meta">Klik på billedet for at åbne</p>
+          <img
+            :src="i.imageUrl"
+            class="thumb"
+            alt="Issue billede"
+            @click="openImage(i.imageUrl)"
+          >
+        </div>
+
+        <!--
+          Primær handling for staff
+          → Nielsen: Visibility of system status
+        -->
+        <button class="primary-btn" @click="save(i)">
+          💾 Gem ændringer
+        </button>
       </div>
-
-      <button @click="save(i)">💾 Gem ændringer</button>
     </div>
 
-    <!-- POPUP -->
-    <div v-if="selectedImage" class="image-modal" @click="selectedImage = null">
-      <img :src="selectedImage" @click.stop>
+    <!--
+      Tom-tilstand forklares tydeligt
+      → Nielsen: Visibility of system status
+    -->
+    <p v-else class="muted">Ingen administrative sager fundet…</p>
+
+    <!--
+      Modal kan lukkes ved klik udenfor
+      → Nielsen: User control and freedom
+    -->
+    <div
+      v-if="selectedImage"
+      class="image-modal"
+      @click="selectedImage = null"
+    >
+      <img :src="selectedImage" alt="Stort billede" @click.stop>
     </div>
 
   </div>
 </main>
 
-<footer>
+<!--
+  Footer adskilt visuelt fra funktionelt indhold
+  → Gestalt: Figur / baggrund
+-->
+<footer class="footer">
   Campus Support – Administrativ
 </footer>
 
