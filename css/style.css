@@ -162,6 +162,29 @@ h1 {
   margin-top: 60px;
 }
 
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hidden-btn {
+  opacity: 0;
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  color: var(--yellow);
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+/* Vises kun ved hover på Campus */
+.logo-wrapper:hover .hidden-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+  
 /* =====================
    RESPONSIVE
 ===================== */
